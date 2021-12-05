@@ -9,6 +9,9 @@
 # production
 /build
 
+# tensorflow models
+/public/tensorflow/*
+
 # misc
 .DS_Store
 .env.local
