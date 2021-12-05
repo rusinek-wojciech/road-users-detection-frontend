@@ -1,39 +1,87 @@
-export const labels = [
-  { name: 'empty', color: 'white' },
-  { name: 'bike', color: 'red' },
-  { name: 'scooter', color: 'yellow' },
+const labels = [
+  {
+    name: 'bike',
+    color: 'red',
+  },
+  {
+    name: 'scooter',
+    color: 'yellow',
+  },
 ]
 
-export const drawRect = (
+export interface DetectedObject {
+  label: {
+    name: string
+    color: string
+  }
+  score: string
+  box: number[]
+}
+
+export const detectObjects = (
   boxes: number[][],
   classes: number[],
   scores: number[],
   threshold: number,
   imgWidth: number,
-  imgHeight: number,
+  imgHeight: number
+): DetectedObject[] => {
+  const objects = []
+  for (let i = 0; i < boxes.length; i++) {
+    if (boxes[i] && classes[i] && scores[i] > threshold) {
+      let [minY, minX, maxY, maxX] = boxes[i]
+      minY *= imgHeight
+      minX *= imgWidth
+      maxY *= imgHeight
+      maxX *= imgWidth
+      const box = []
+      box.push(minX)
+      box.push(minY)
+      box.push(maxX - minX)
+      box.push(maxY - minY)
+      objects.push({
+        label: labels[classes[i] - 1],
+        score: scores[i].toFixed(4),
+        box,
+      })
+    }
+  }
+  return objects
+}
+
+const drawText = (
+  text: string,
+  x: number,
+  y: number,
   ctx: CanvasRenderingContext2D
 ): void => {
-  for (let i = 0; i <= boxes.length; i++) {
-    if (boxes[i] && classes[i] && scores[i] > threshold) {
-      const [y, x, height, width] = boxes[i]
-      const text = classes[i]
-      ctx.strokeStyle = labels[text]['color']
-      ctx.lineWidth = 10
-      ctx.fillStyle = 'white'
-      ctx.font = '16px Arial'
-      ctx.beginPath()
-      ctx.fillText(
-        labels[text]['name'] + ' - ' + Math.round(scores[i] * 100) / 100,
-        x * imgWidth,
-        y * imgHeight - 10
-      )
-      ctx.rect(
-        x * imgWidth,
-        y * imgHeight,
-        (width * imgWidth) / 2,
-        (height * imgHeight) / 2
-      )
-      ctx.stroke()
-    }
+  ctx.font = '16px Arial'
+  ctx.strokeStyle = 'black'
+  ctx.lineWidth = 6
+  ctx.strokeText(text, x, y)
+  ctx.fillStyle = 'white'
+  ctx.fillText(text, x, y)
+}
+
+const drawBox = (
+  box: number[],
+  color: string,
+  ctx: CanvasRenderingContext2D
+) => {
+  ctx.strokeStyle = color
+  ctx.lineWidth = 10
+  ctx.beginPath()
+  ctx.rect(box[0], box[1], box[2], box[3])
+  ctx.stroke()
+}
+
+export const drawObjects = (
+  objects: DetectedObject[],
+  ctx: CanvasRenderingContext2D
+) => {
+  for (let i = 0; i < objects.length; i++) {
+    const { label, box, score } = objects[i]
+    drawText(`${label.name}: ${score}`, box[0], box[1] - 10, ctx)
+    drawBox(box, label.color, ctx)
   }
 }
