@@ -1,5 +1,5 @@
 import * as tf from '@tensorflow/tfjs'
-import { LABELS } from './config'
+import { config } from './config'
 
 export interface DetectedObject {
   label: {
@@ -32,7 +32,7 @@ export const detectObjects = (
       box.push(maxX - minX)
       box.push(maxY - minY)
       objects.push({
-        label: LABELS[classes[i] - 1],
+        label: config.LABELS[classes[i] - 1],
         score: scores[i].toFixed(4),
         box,
       })
@@ -61,7 +61,7 @@ const drawBox = (
   ctx: CanvasRenderingContext2D
 ) => {
   ctx.strokeStyle = color
-  ctx.lineWidth = 10
+  ctx.lineWidth = 3
   ctx.beginPath()
   ctx.rect(box[0], box[1], box[2], box[3])
   ctx.stroke()
@@ -84,7 +84,7 @@ export const drawObjects = (
       resizeBox[1] *= heightScale
       resizeBox[3] *= heightScale
     }
-    drawText(`${label.name}: ${score}`, resizeBox[0], resizeBox[1] - 10, ctx)
+    drawText(`${label.name}: ${score}`, resizeBox[0], resizeBox[1] - 5, ctx)
     drawBox(resizeBox, label.color, ctx)
   }
 }
@@ -99,4 +99,11 @@ export const getTensorImage = (
     .toInt()
     .transpose([0, 1, 2])
     .expandDims()
+}
+
+export const warmUp = (model: tf.GraphModel) => {
+  tf.engine().startScope()
+  model
+    .executeAsync(tf.zeros([1, 300, 300, 3]).toInt())
+    .finally(() => tf.engine().endScope())
 }

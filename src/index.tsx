@@ -5,15 +5,19 @@ import { App } from './App'
 import { store } from './app/store'
 import { Provider } from 'react-redux'
 import * as serviceWorker from './serviceWorker'
-import { GraphModel, loadGraphModel, setBackend } from '@tensorflow/tfjs'
+import * as tf from '@tensorflow/tfjs'
+import { warmUp } from './utils'
+import { config } from './config'
 
 // backend
-setBackend('webgl')
+tf.setBackend('webgl')
 
 // download tensorflow model
-export let model: GraphModel | null = null
-loadGraphModel('tensorflow/model.json')
+export let model: tf.GraphModel | null = null
+tf.ready()
+  .then(() => tf.loadGraphModel(config.PATH))
   .then((m) => (model = m))
+  .then((m) => warmUp(m))
   .then(() => console.log('Finished loading model'))
   .catch(() => console.log('Failed to fetch model'))
 

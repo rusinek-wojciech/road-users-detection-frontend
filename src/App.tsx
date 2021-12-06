@@ -7,7 +7,7 @@ import {
   getTensorImage,
 } from './utils'
 import { model } from '.'
-import { MODEL_WIDTH, MODEL_HEIGHT } from './config'
+import { config } from './config'
 
 const styles: { [k: string]: React.CSSProperties } = {
   container: {
@@ -97,23 +97,24 @@ export const App = () => {
       if (image && model) {
         tf.engine().startScope()
         model
-          .executeAsync(getTensorImage(image, MODEL_WIDTH, MODEL_HEIGHT))
+          .executeAsync(
+            getTensorImage(image, config.MODEL_WIDTH, config.MODEL_HEIGHT)
+          )
           .then(async (predictions: any) => {
-            const boxes = predictions[2].arraySync()[0]
-            const classes = predictions[3].arraySync()[0]
-            const scores = predictions[5].arraySync()[0]
-
+            const boxes = predictions[config.BOXES_INDEX].arraySync()[0]
+            const classes = predictions[config.CLASSES_INDEX].arraySync()[0]
+            const scores = predictions[config.SCORES_INDEX].arraySync()[0]
             return detectObjects(
               boxes,
               classes,
               scores,
-              0.9,
+              config.TRESHOLD,
               image.naturalWidth,
               image.naturalHeight
             )
           })
           .then((objects: DetectedObject[]) => setDetectedObjects(objects))
-          .then(() => tf.engine().endScope())
+          .finally(() => tf.engine().endScope())
       }
     }
     detect()
