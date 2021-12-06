@@ -4,42 +4,33 @@ import {
   PaletteMode,
   ThemeProvider,
 } from '@mui/material'
-import { grey } from '@mui/material/colors'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { BackdropSpinner } from './components/BackdropSpinner'
 import { ImageContainer } from './ImageContainer'
-import { Navbar } from './Navbar'
+import { Navbar } from './components/Navbar'
+import { getDesignTokens } from './theme'
+import * as tf from '@tensorflow/tfjs'
+import { config } from './config'
+import { warmUp } from './utils'
 
-const getDesignTokens = (mode: PaletteMode) => ({
-  palette: {
-    type: mode,
-    primary: {
-      main: '#3f51b5',
-    },
-    secondary: {
-      main: '#f50057',
-    },
-    ...(mode === 'dark' && {
-      background: {
-        default: '#1b212b',
-        paper: '#1b212b',
-      },
-    }),
-    text: {
-      ...(mode === 'light'
-        ? {
-            primary: grey[900],
-            secondary: grey[800],
-          }
-        : {
-            primary: '#fff',
-            secondary: grey[500],
-          }),
-    },
-  },
-})
+// download tensorflow model
+export let model: tf.GraphModel | null = null
 
 export const App = () => {
   const [mode, setMode] = useState<PaletteMode>('dark')
+  const [loading, setLoading] = useState<boolean>(true)
+
+  useEffect(() => {
+    tf.setBackend('webgl')
+    tf.ready()
+      .then(() => tf.loadGraphModel(config.PATH))
+      .then((m) => (model = m))
+      .then((m) => warmUp(m))
+      .then(() => console.log('Finished loading model'))
+      .catch(() => console.log('Failed to fetch model'))
+      .finally(() => setLoading(false))
+  }, [])
+
   const colorMode = useMemo(
     () => ({
       toggleColorMode: () => {
@@ -55,6 +46,7 @@ export const App = () => {
 
   return (
     <ThemeProvider theme={theme}>
+      {loading && <BackdropSpinner />}
       <CssBaseline />
       <Navbar mode={mode} toggleColorMode={colorMode.toggleColorMode} />
       <ImageContainer />

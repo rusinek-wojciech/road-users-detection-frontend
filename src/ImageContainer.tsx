@@ -6,7 +6,7 @@ import {
   DetectedObject,
   getTensorImage,
 } from './utils'
-import { model } from '.'
+import { model } from './App'
 import { config } from './config'
 
 const styles: { [k: string]: React.CSSProperties } = {
