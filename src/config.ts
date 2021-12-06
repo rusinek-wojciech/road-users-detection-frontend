@@ -35,6 +35,7 @@ const resnet50: Config = {
   PATH: 'tensorflow/road/model.json',
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const kangaroo: Config = {
   LABELS: [
     {
@@ -56,4 +57,4 @@ const kangaroo: Config = {
 }
 
 // set current profle
-export const config: Config = kangaroo
+export const config: Config = resnet50

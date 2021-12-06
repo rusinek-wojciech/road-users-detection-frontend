@@ -13,21 +13,20 @@ import * as tf from '@tensorflow/tfjs'
 import { config } from './config'
 import { warmUp } from './utils'
 
-// download tensorflow model
-export let model: tf.GraphModel | null = null
-
 export const App = () => {
   const [mode, setMode] = useState<PaletteMode>('dark')
   const [loading, setLoading] = useState<boolean>(true)
+  const [model, setModel] = useState<tf.GraphModel | null>(null)
 
   useEffect(() => {
     tf.setBackend('webgl')
     tf.ready()
       .then(() => tf.loadGraphModel(config.PATH))
-      .then((m) => (model = m))
-      .then((m) => warmUp(m))
-      .then(() => console.log('Finished loading model'))
-      .catch(() => console.log('Failed to fetch model'))
+      .then((m) => {
+        setModel(m)
+        warmUp(m)
+      })
+      .catch(() => console.error('Failed to fetch model'))
       .finally(() => setLoading(false))
   }, [])
 
@@ -49,7 +48,7 @@ export const App = () => {
       {loading && <BackdropSpinner />}
       <CssBaseline />
       <Navbar mode={mode} toggleColorMode={colorMode.toggleColorMode} />
-      <ImageContainer />
+      <ImageContainer model={model} />
     </ThemeProvider>
   )
 }

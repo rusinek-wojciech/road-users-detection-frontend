@@ -47,7 +47,7 @@ const drawText = (
   y: number,
   ctx: CanvasRenderingContext2D
 ): void => {
-  ctx.font = '16px Arial'
+  ctx.font = '1rem Roboto'
   ctx.strokeStyle = 'black'
   ctx.lineWidth = 6
   ctx.strokeText(text, x, y)
