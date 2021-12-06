@@ -1,15 +1,5 @@
 import * as tf from '@tensorflow/tfjs'
-
-const labels = [
-  {
-    name: 'bike',
-    color: 'red',
-  },
-  {
-    name: 'scooter',
-    color: 'yellow',
-  },
-]
+import { LABELS } from './config'
 
 export interface DetectedObject {
   label: {
@@ -42,7 +32,7 @@ export const detectObjects = (
       box.push(maxX - minX)
       box.push(maxY - minY)
       objects.push({
-        label: labels[classes[i] - 1],
+        label: LABELS[classes[i] - 1],
         score: scores[i].toFixed(4),
         box,
       })
