@@ -7,9 +7,7 @@ import {
   getTensorImage,
 } from './utils'
 import { model } from '.'
-
-const MODEL_WIDTH = 640
-const MODEL_HEIGHT = 640
+import { MODEL_WIDTH, MODEL_HEIGHT } from './config'
 
 const styles = {
   container: {
