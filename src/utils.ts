@@ -1,3 +1,5 @@
+import * as tf from '@tensorflow/tfjs'
+
 const labels = [
   {
     name: 'bike',
@@ -77,11 +79,34 @@ const drawBox = (
 
 export const drawObjects = (
   objects: DetectedObject[],
-  ctx: CanvasRenderingContext2D
+  ctx: CanvasRenderingContext2D,
+  widthScale?: number,
+  heightScale?: number
 ) => {
   for (let i = 0; i < objects.length; i++) {
     const { label, box, score } = objects[i]
-    drawText(`${label.name}: ${score}`, box[0], box[1] - 10, ctx)
-    drawBox(box, label.color, ctx)
+    const resizeBox = [...box]
+    if (widthScale) {
+      resizeBox[0] *= widthScale
+      resizeBox[2] *= widthScale
+    }
+    if (heightScale) {
+      resizeBox[1] *= heightScale
+      resizeBox[3] *= heightScale
+    }
+    drawText(`${label.name}: ${score}`, resizeBox[0], resizeBox[1] - 10, ctx)
+    drawBox(resizeBox, label.color, ctx)
   }
+}
+
+export const getTensorImage = (
+  image: HTMLImageElement,
+  width: number,
+  height: number
+): tf.Tensor<tf.Rank> => {
+  return tf.image
+    .resizeBilinear(tf.browser.fromPixels(image), [width, height])
+    .toInt()
+    .transpose([0, 1, 2])
+    .expandDims()
 }
