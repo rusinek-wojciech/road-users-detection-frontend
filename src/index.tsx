@@ -1,13 +1,12 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import './index.css'
-import { App } from './App'
 import { store } from './app/store'
 import { Provider } from 'react-redux'
 import * as serviceWorker from './serviceWorker'
 import * as tf from '@tensorflow/tfjs'
 import { warmUp } from './utils'
 import { config } from './config'
+import { App } from './App'
 
 // backend
 tf.setBackend('webgl')
