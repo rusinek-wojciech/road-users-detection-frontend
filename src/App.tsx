@@ -9,27 +9,27 @@ import {
 import { model } from '.'
 import { MODEL_WIDTH, MODEL_HEIGHT } from './config'
 
-const styles = {
+const styles: { [k: string]: React.CSSProperties } = {
   container: {
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
     paddingTop: 50,
-  } as React.CSSProperties,
+  },
   preview: {
     marginTop: 50,
     display: 'flex',
     flexDirection: 'column',
-  } as React.CSSProperties,
-  image: { width: '100%', height: '*' } as React.CSSProperties,
+  },
+  image: { width: '100%', height: '*' },
   delete: {
     cursor: 'pointer',
     padding: 15,
     background: 'red',
     color: 'white',
     border: 'none',
-  } as React.CSSProperties,
+  },
   canvas: {
     position: 'absolute',
     marginLeft: 'auto',
@@ -40,18 +40,18 @@ const styles = {
     zIndex: 999,
     width: '100%',
     height: '*',
-  } as React.CSSProperties,
+  },
   app: {
     textAlign: 'center',
     minHeight: '100vh',
-  } as React.CSSProperties,
+  },
   appHeader: {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
     fontSize: 'calc(10px + 2vmin)',
-  } as React.CSSProperties,
+  },
 }
 
 export const App = () => {
@@ -128,7 +128,10 @@ export const App = () => {
     ) {
       const image = new Image()
       image.src = URL.createObjectURL(files[0])
-      image.addEventListener('load', () => setImage(image))
+      image.addEventListener('load', () => {
+        setDetectedObjects([])
+        setImage(image)
+      })
     }
   }
 
