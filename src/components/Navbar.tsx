@@ -44,7 +44,7 @@ export const Navbar = ({ mode, toggleColorMode }: Props) => {
             color='inherit'
             onClick={toggleColorMode}
           >
-            {mode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}
+            {mode === 'dark' ? <DarkModeIcon /> : <LightModeIcon />}
           </IconButton>
         </Toolbar>
       </AppBar>
