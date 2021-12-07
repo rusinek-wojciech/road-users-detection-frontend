@@ -125,7 +125,7 @@ export const ImageContainer = ({ model }: Props) => {
 
   return (
     <main style={{ paddingTop: '1rem' }}>
-      <Container maxWidth='sm'>
+      <Container>
         {content}
         <Stack
           sx={{ pt: 4 }}
