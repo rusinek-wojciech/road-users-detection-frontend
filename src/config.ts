@@ -57,4 +57,4 @@ const kangaroo: Config = {
 }
 
 // set current profle
-export const config: Config = resnet50
+export const config: Config = kangaroo

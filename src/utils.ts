@@ -90,12 +90,12 @@ export const drawObjects = (
 }
 
 export const getTensorImage = (
-  image: HTMLImageElement,
+  src: HTMLImageElement | HTMLVideoElement,
   width: number,
   height: number
 ): tf.Tensor<tf.Rank> => {
   return tf.image
-    .resizeBilinear(tf.browser.fromPixels(image), [width, height])
+    .resizeBilinear(tf.browser.fromPixels(src), [width, height])
     .toInt()
     .transpose([0, 1, 2])
     .expandDims()

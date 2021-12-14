@@ -11,6 +11,7 @@ import {
 } from '@mui/material'
 import FileUploadIcon from '@mui/icons-material/FileUpload'
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera'
+import Webcam from 'react-webcam'
 import {
   detectObjects,
   drawObjects,
@@ -23,27 +24,46 @@ interface Props {
   model: tf.GraphModel | null
 }
 
+type Mode = 'empty' | 'camera' | 'image'
+
 export const ImageContainer = ({ model }: Props) => {
-  const [image, setImage] = useState<HTMLImageElement | null>()
   const [detectedObjects, setDetectedObjects] = useState<DetectedObject[]>([])
-  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const [mode, setMode] = useState<Mode>('empty')
+
+  const [image, setImage] = useState<HTMLImageElement | null>()
+  const [isCamera, setIsCamera] = useState<boolean>(false)
+
   const cardRef = useRef<HTMLDivElement>(null)
+  const webcamRef = useRef<Webcam>(null)
+  const canvasRef = useRef<HTMLCanvasElement>(null)
   const requestRef = useRef<number>()
 
   useEffect(() => {
     const ctx = canvasRef.current?.getContext('2d')
     const draw = () => {
-      if (ctx && canvasRef.current && image && cardRef.current) {
+      if (ctx && canvasRef.current && cardRef.current) {
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
         const { clientWidth, clientHeight } = cardRef.current
         canvasRef.current.width = clientWidth
         canvasRef.current.height = clientHeight
-        drawObjects(
-          detectedObjects,
-          ctx,
-          clientWidth / image.naturalWidth,
-          clientHeight / image.naturalHeight
-        )
+        if (image) {
+          drawObjects(
+            detectedObjects,
+            ctx,
+            clientWidth / image.naturalWidth,
+            clientHeight / image.naturalHeight
+          )
+        } else if (isCamera && webcamRef.current) {
+          if (webcamRef.current.video) {
+            const { video } = webcamRef.current
+            drawObjects(
+              detectedObjects,
+              ctx,
+              clientWidth / video.videoWidth,
+              clientHeight / video.videoHeight
+            )
+          }
+        }
       }
       requestRef.current = requestAnimationFrame(draw)
     }
@@ -54,11 +74,11 @@ export const ImageContainer = ({ model }: Props) => {
         cancelAnimationFrame(requestRef.current)
       }
     }
-  }, [image, detectedObjects])
+  }, [image, detectedObjects, isCamera])
 
   useEffect(() => {
-    const detect = async () => {
-      if (image && model) {
+    const detectImage = async (image: HTMLImageElement) => {
+      if (model) {
         tf.engine().startScope()
         model
           .executeAsync(
@@ -81,10 +101,47 @@ export const ImageContainer = ({ model }: Props) => {
           .finally(() => tf.engine().endScope())
       }
     }
-    detect()
-  }, [image, model])
+
+    const detectVideo = async (video: HTMLVideoElement) => {
+      if (model && video) {
+        tf.engine().startScope()
+        model
+          .executeAsync(
+            getTensorImage(video, config.MODEL_WIDTH, config.MODEL_HEIGHT)
+          )
+          .then(async (predictions: any) => {
+            const boxes = predictions[config.BOXES_INDEX].arraySync()[0]
+            const classes = predictions[config.CLASSES_INDEX].arraySync()[0]
+            const scores = predictions[config.SCORES_INDEX].arraySync()[0]
+            return detectObjects(
+              boxes,
+              classes,
+              scores,
+              config.TRESHOLD,
+              video.videoWidth,
+              video.videoHeight
+            )
+          })
+          .then((objects: DetectedObject[]) => setDetectedObjects(objects))
+          .finally(() => tf.engine().endScope())
+      }
+    }
+
+    if (isCamera) {
+      setInterval(() => {
+        if (webcamRef.current) {
+          if (webcamRef.current.video) {
+            detectVideo(webcamRef.current.video)
+          }
+        }
+      }, 1500)
+    } else if (image) {
+      detectImage(image)
+    }
+  }, [image, isCamera, model])
 
   const onChangeImage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setIsCamera(false)
     const { files } = event.target
     if (
       files &&
@@ -100,28 +157,65 @@ export const ImageContainer = ({ model }: Props) => {
     }
   }
 
-  const content = image ? (
-    <Card ref={cardRef}>
-      <CardActionArea>
-        <canvas
-          ref={canvasRef}
-          style={{
-            position: 'absolute',
-            left: 0,
-            right: 0,
-            zIndex: 100,
-            width: '100%',
-            height: '100%',
-          }}
-        />
-        <CardMedia component='img' image={image.src} alt='detected image' />
-      </CardActionArea>
-    </Card>
-  ) : (
-    <Typography variant='h5' align='center' color='text.secondary' paragraph>
-      Please upload your photo
-    </Typography>
-  )
+  const openCamera = () => {
+    setImage(null)
+    setIsCamera(true)
+  }
+
+  let content: JSX.Element
+  if (image) {
+    content = (
+      <Card ref={cardRef}>
+        <CardActionArea>
+          <canvas
+            ref={canvasRef}
+            style={{
+              position: 'absolute',
+              left: 0,
+              right: 0,
+              zIndex: 100,
+              width: '100%',
+              height: '100%',
+            }}
+          />
+          <CardMedia component='img' image={image.src} alt='detected image' />
+        </CardActionArea>
+      </Card>
+    )
+  } else if (isCamera) {
+    content = (
+      <Card ref={cardRef}>
+        <CardActionArea>
+          <canvas
+            ref={canvasRef}
+            style={{
+              position: 'absolute',
+              left: 0,
+              right: 0,
+              zIndex: 100,
+              width: '100%',
+              height: '100%',
+            }}
+          />
+          <Webcam
+            ref={webcamRef}
+            muted={true}
+            width='500'
+            style={{
+              width: '100%',
+              objectFit: 'fill',
+            }}
+          />
+        </CardActionArea>
+      </Card>
+    )
+  } else {
+    content = (
+      <Typography variant='h5' align='center' color='text.secondary' paragraph>
+        Please upload your photo
+      </Typography>
+    )
+  }
 
   return (
     <main style={{ paddingTop: '1rem' }}>
@@ -149,7 +243,12 @@ export const ImageContainer = ({ model }: Props) => {
               Upload
             </Button>
           </label>
-          <Button variant='outlined' startIcon={<PhotoCameraIcon />}>
+          <Button
+            variant='outlined'
+            component='span'
+            onClick={openCamera}
+            startIcon={<PhotoCameraIcon />}
+          >
             Camera
           </Button>
         </Stack>
