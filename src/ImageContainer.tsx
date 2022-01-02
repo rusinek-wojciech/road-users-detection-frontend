@@ -24,12 +24,8 @@ interface Props {
   model: tf.GraphModel | null
 }
 
-type Mode = 'empty' | 'camera' | 'image'
-
-export const ImageContainer = ({ model }: Props) => {
+const ImageContainer = ({ model }: Props) => {
   const [detectedObjects, setDetectedObjects] = useState<DetectedObject[]>([])
-  const [mode, setMode] = useState<Mode>('empty')
-
   const [image, setImage] = useState<HTMLImageElement | null>()
   const [isCamera, setIsCamera] = useState<boolean>(false)
 
@@ -88,6 +84,9 @@ export const ImageContainer = ({ model }: Props) => {
             const boxes = predictions[config.BOXES_INDEX].arraySync()[0]
             const classes = predictions[config.CLASSES_INDEX].arraySync()[0]
             const scores = predictions[config.SCORES_INDEX].arraySync()[0]
+            // console.log('boxes', boxes)
+            // console.log('classes', classes)
+            // console.log('scores', scores)
             return detectObjects(
               boxes,
               classes,
@@ -97,7 +96,7 @@ export const ImageContainer = ({ model }: Props) => {
               image.naturalHeight
             )
           })
-          .then((objects: DetectedObject[]) => setDetectedObjects(objects))
+          .then((objects) => setDetectedObjects(objects))
           .finally(() => tf.engine().endScope())
       }
     }
@@ -134,7 +133,7 @@ export const ImageContainer = ({ model }: Props) => {
             detectVideo(webcamRef.current.video)
           }
         }
-      }, 1500)
+      }, 500)
     } else if (image) {
       detectImage(image)
     }
@@ -256,3 +255,5 @@ export const ImageContainer = ({ model }: Props) => {
     </main>
   )
 }
+
+export default ImageContainer

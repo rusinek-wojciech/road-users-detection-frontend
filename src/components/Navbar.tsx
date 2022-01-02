@@ -13,9 +13,10 @@ import DarkModeIcon from '@mui/icons-material/DarkMode'
 interface Props {
   mode: PaletteMode
   toggleColorMode: () => void
+  toggleSidebar: () => void
 }
 
-export const Navbar = ({ mode, toggleColorMode }: Props) => {
+const Navbar = ({ mode, toggleColorMode, toggleSidebar }: Props) => {
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position='static'>
@@ -26,6 +27,7 @@ export const Navbar = ({ mode, toggleColorMode }: Props) => {
             color='inherit'
             aria-label='open drawer'
             sx={{ mr: 2 }}
+            onClick={toggleSidebar}
           >
             <MenuIcon />
           </IconButton>
@@ -44,10 +46,12 @@ export const Navbar = ({ mode, toggleColorMode }: Props) => {
             color='inherit'
             onClick={toggleColorMode}
           >
-            {mode === 'dark' ? <DarkModeIcon /> : <LightModeIcon />}
+            {mode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}
           </IconButton>
         </Toolbar>
       </AppBar>
     </Box>
   )
 }
+
+export default Navbar

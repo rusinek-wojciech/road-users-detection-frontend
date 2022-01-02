@@ -7,7 +7,7 @@ export interface DetectedObject {
     color: string
   }
   score: string
-  box: number[]
+  box: [number, number, number, number]
 }
 
 export const detectObjects = (
@@ -18,27 +18,21 @@ export const detectObjects = (
   imgWidth: number,
   imgHeight: number
 ): DetectedObject[] => {
-  const objects = []
-  for (let i = 0; i < boxes.length; i++) {
-    if (boxes[i] && classes[i] && scores[i] > threshold) {
-      let [minY, minX, maxY, maxX] = boxes[i]
-      minY *= imgHeight
-      minX *= imgWidth
-      maxY *= imgHeight
-      maxX *= imgWidth
-      const box = []
-      box.push(minX)
-      box.push(minY)
-      box.push(maxX - minX)
-      box.push(maxY - minY)
-      objects.push({
+  return boxes
+    .filter((box, i) => box && classes[i] && scores[i] > threshold)
+    .map((box, i) => {
+      const [minY, minX, maxY, maxX] = box
+      return {
         label: config.LABELS[classes[i] - 1],
         score: scores[i].toFixed(4),
-        box,
-      })
-    }
-  }
-  return objects
+        box: [
+          minX * imgWidth,
+          minY * imgHeight,
+          (maxX - minX) * imgWidth,
+          (maxY - minY) * imgHeight,
+        ],
+      }
+    })
 }
 
 const drawText = (
@@ -56,14 +50,14 @@ const drawText = (
 }
 
 const drawBox = (
-  box: number[],
+  box: [number, number, number, number],
   color: string,
   ctx: CanvasRenderingContext2D
-) => {
+): void => {
   ctx.strokeStyle = color
   ctx.lineWidth = 3
   ctx.beginPath()
-  ctx.rect(box[0], box[1], box[2], box[3])
+  ctx.rect(...box)
   ctx.stroke()
 }
 
@@ -72,10 +66,10 @@ export const drawObjects = (
   ctx: CanvasRenderingContext2D,
   widthScale?: number,
   heightScale?: number
-) => {
+): void => {
   for (let i = 0; i < objects.length; i++) {
     const { label, box, score } = objects[i]
-    const resizeBox = [...box]
+    const resizeBox: [number, number, number, number] = [...box]
     if (widthScale) {
       resizeBox[0] *= widthScale
       resizeBox[2] *= widthScale
@@ -101,7 +95,7 @@ export const getTensorImage = (
     .expandDims()
 }
 
-export const warmUp = (model: tf.GraphModel) => {
+export const warmUp = (model: tf.GraphModel): void => {
   tf.engine().startScope()
   model
     .executeAsync(tf.zeros([1, 300, 300, 3]).toInt())

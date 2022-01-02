@@ -1,7 +1,7 @@
 import Backdrop from '@mui/material/Backdrop'
 import CircularProgress from '@mui/material/CircularProgress'
 
-export const BackdropSpinner = () => {
+const BackdropSpinner = () => {
   return (
     <div>
       <Backdrop
@@ -13,3 +13,5 @@ export const BackdropSpinner = () => {
     </div>
   )
 }
+
+export default BackdropSpinner
