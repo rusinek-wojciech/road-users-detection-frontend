@@ -4,35 +4,18 @@ import {
   PaletteMode,
   ThemeProvider,
 } from '@mui/material'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import BackdropSpinner from './components/BackdropSpinner'
 import ImageContainer from './ImageContainer'
 import Navbar from './components/Navbar'
 import Sidebar from './components/Sidebar'
 import { getDesignTokens } from './theme'
-import * as tf from '@tensorflow/tfjs'
-import { config } from './config'
-import { warmUp } from './utils'
+import useModel from './useModel'
 
 const App = () => {
   const [mode, setMode] = useState<PaletteMode>('dark')
-  const [loading, setLoading] = useState<boolean>(true)
   const [sidebar, setSidebar] = useState<boolean>(false)
-  const [model, setModel] = useState<tf.GraphModel | null>(null)
-
-  useEffect(() => {
-    if (!model) {
-      tf.setBackend('webgl')
-      tf.ready()
-        .then(() => tf.loadGraphModel(config.PATH))
-        .then((m) => {
-          setModel(m)
-          warmUp(m)
-        })
-        .catch(() => console.error('Failed to fetch model'))
-        .finally(() => setLoading(false))
-    }
-  }, [model])
+  const [model, loading] = useModel()
 
   const colorMode = useMemo(
     () => ({
