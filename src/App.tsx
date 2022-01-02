@@ -1,48 +1,38 @@
-import {
-  createTheme,
-  CssBaseline,
-  PaletteMode,
-  ThemeProvider,
-} from '@mui/material'
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
+import { createTheme, CssBaseline, ThemeProvider } from '@mui/material'
 import BackdropSpinner from './components/BackdropSpinner'
 import ImageContainer from './containers/ImageContainer'
 import Navbar from './components/Navbar'
 import Sidebar from './components/Sidebar'
 import { getDesignTokens } from './services/theme'
 import useModel from './hooks/useModel'
+import { useAppDispatch, useAppState } from './store/Context'
+import { toggleSidebar, closeSidebar, togglePaletteMode } from './store/actions'
 
 const App = () => {
-  const [mode, setMode] = useState<PaletteMode>('dark')
-  const [enabledSidebar, setEnabledSidebar] = useState<boolean>(false)
+  const { sidebarEnabled, paletteMode } = useAppState()
+  const dispatch = useAppDispatch()
   const [model, loading] = useModel()
-
-  const colorMode = useMemo(
-    () => ({
-      toggleColorMode: () => {
-        setMode((prevMode: PaletteMode) =>
-          prevMode === 'light' ? 'dark' : 'light'
-        )
-      },
-    }),
-    []
+  const theme = useMemo(
+    () => createTheme(getDesignTokens(paletteMode)),
+    [paletteMode]
   )
-  const theme = useMemo(() => createTheme(getDesignTokens(mode)), [mode])
 
-  const onSidebarClose = () => setEnabledSidebar(false)
-  const onSidebarToggle = () => setEnabledSidebar((prev) => !prev)
+  const onToggleMode = () => dispatch(togglePaletteMode())
+  const onSidebarClose = () => dispatch(closeSidebar())
+  const onSidebarToggle = () => dispatch(toggleSidebar())
 
   return (
     <ThemeProvider theme={theme}>
       {loading && <BackdropSpinner />}
       <CssBaseline />
       <Navbar
-        mode={mode}
-        toggleColorMode={colorMode.toggleColorMode}
+        mode={paletteMode}
+        toggleMode={onToggleMode}
         toggleSidebar={onSidebarToggle}
       />
       <Sidebar
-        enabled={enabledSidebar}
+        enabled={sidebarEnabled}
         onClose={onSidebarClose}
         onToggle={onSidebarToggle}
       />
