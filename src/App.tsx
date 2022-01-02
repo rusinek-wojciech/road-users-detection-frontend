@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { createTheme, CssBaseline, ThemeProvider } from '@mui/material'
 import BackdropSpinner from './components/BackdropSpinner'
-import ImageContainer from './containers/ImageContainer'
+import ContentContainer from './containers/ContentContainer'
 import Navbar from './components/Navbar'
 import Sidebar from './components/Sidebar'
 import { getDesignTokens } from './services/theme'
@@ -36,7 +36,7 @@ const App = () => {
         onClose={onSidebarClose}
         onToggle={onSidebarToggle}
       />
-      <ImageContainer model={model} />
+      <ContentContainer model={model} />
     </ThemeProvider>
   )
 }
