@@ -30,11 +30,9 @@ export const AppContextProvider = ({ children }: Props) => {
 }
 
 export const useAppDispatch = () => {
-  const { dispatch } = useContext(AppContext)
-  return dispatch
+  return useContext(AppContext).dispatch
 }
 
 export const useAppState = () => {
-  const { state } = useContext(AppContext)
-  return state
+  return useContext(AppContext).state
 }

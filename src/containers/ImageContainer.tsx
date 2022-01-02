@@ -12,13 +12,13 @@ import {
 import FileUploadIcon from '@mui/icons-material/FileUpload'
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera'
 import Webcam from 'react-webcam'
+import { drawObjects } from '../services/drawing'
 import {
   detectObjects,
-  drawObjects,
   DetectedObject,
   getTensorImage,
-} from './utils'
-import { config } from './config'
+} from '../services/detection'
+import { config } from '../services/config'
 
 interface Props {
   model: tf.GraphModel | null

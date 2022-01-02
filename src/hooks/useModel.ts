@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
 import * as tf from '@tensorflow/tfjs'
-import { warmUp } from './utils'
-import { config } from './config'
-import { useAppDispatch, useAppState } from './store/Context'
-import { setModel } from './store/actions'
+import { warmUp } from '../services/detection'
+import { config } from '../services/config'
+import { useAppDispatch, useAppState } from '../store/Context'
+import { setModel } from '../store/actions'
 
 const useModel = () => {
   const { model } = useAppState()
