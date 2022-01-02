@@ -14,7 +14,7 @@ import useModel from './useModel'
 
 const App = () => {
   const [mode, setMode] = useState<PaletteMode>('dark')
-  const [sidebar, setSidebar] = useState<boolean>(false)
+  const [enabledSidebar, setEnabledSidebar] = useState<boolean>(false)
   const [model, loading] = useModel()
 
   const colorMode = useMemo(
@@ -27,11 +27,10 @@ const App = () => {
     }),
     []
   )
-
   const theme = useMemo(() => createTheme(getDesignTokens(mode)), [mode])
 
-  const onSidebarClose = () => setSidebar(false)
-  const onSidebarToggle = () => setSidebar((prev) => !prev)
+  const onSidebarClose = () => setEnabledSidebar(false)
+  const onSidebarToggle = () => setEnabledSidebar((prev) => !prev)
 
   return (
     <ThemeProvider theme={theme}>
@@ -43,7 +42,7 @@ const App = () => {
         toggleSidebar={onSidebarToggle}
       />
       <Sidebar
-        enabled={sidebar}
+        enabled={enabledSidebar}
         onClose={onSidebarClose}
         onToggle={onSidebarToggle}
       />
