@@ -6,11 +6,11 @@ import {
 } from '@mui/material'
 import { useMemo, useState } from 'react'
 import BackdropSpinner from './components/BackdropSpinner'
-import ImageContainer from './ImageContainer'
+import ImageContainer from './containers/ImageContainer'
 import Navbar from './components/Navbar'
 import Sidebar from './components/Sidebar'
-import { getDesignTokens } from './theme'
-import useModel from './useModel'
+import { getDesignTokens } from './services/theme'
+import useModel from './hooks/useModel'
 
 const App = () => {
   const [mode, setMode] = useState<PaletteMode>('dark')
