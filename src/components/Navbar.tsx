@@ -12,11 +12,11 @@ import DarkModeIcon from '@mui/icons-material/DarkMode'
 
 interface Props {
   mode: PaletteMode
-  toggleColorMode: () => void
+  toggleMode: () => void
   toggleSidebar: () => void
 }
 
-const Navbar = ({ mode, toggleColorMode, toggleSidebar }: Props) => {
+const Navbar = ({ mode, toggleMode, toggleSidebar }: Props) => {
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position='static'>
@@ -44,7 +44,7 @@ const Navbar = ({ mode, toggleColorMode, toggleSidebar }: Props) => {
             aria-label='change color mode'
             edge='end'
             color='inherit'
-            onClick={toggleColorMode}
+            onClick={toggleMode}
           >
             {mode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}
           </IconButton>
