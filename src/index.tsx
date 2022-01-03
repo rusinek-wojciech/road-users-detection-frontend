@@ -13,4 +13,6 @@ ReactDOM.render(
   document.getElementById('root')
 )
 
-serviceWorker.register()
+serviceWorker.register({
+  onSuccess: () => console.log('Registered service worker'),
+})
