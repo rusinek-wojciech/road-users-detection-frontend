@@ -26,7 +26,7 @@ const drawBox = (
   ctx.stroke()
 }
 
-export const drawObjects = (
+const drawObjects = (
   objects: DetectedObject[],
   ctx: CanvasRenderingContext2D,
   widthScale?: number,
@@ -45,5 +45,27 @@ export const drawObjects = (
     }
     drawText(`${label.name}: ${score}`, resizeBox[0], resizeBox[1] - 5, ctx)
     drawBox(resizeBox, label.color, ctx)
+  }
+}
+
+export const draw = (
+  objects: DetectedObject[],
+  src: HTMLImageElement | HTMLVideoElement,
+  canvas: HTMLCanvasElement,
+  container: HTMLDivElement
+): void => {
+  const ctx = canvas.getContext('2d')
+  if (ctx) {
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
+    const { clientWidth, clientHeight } = container
+    canvas.width = clientWidth
+    canvas.height = clientHeight
+
+    const width =
+      src instanceof HTMLVideoElement ? src.videoWidth : src.naturalWidth
+    const height =
+      src instanceof HTMLVideoElement ? src.videoHeight : src.naturalHeight
+
+    drawObjects(objects, ctx, clientWidth / width, clientHeight / height)
   }
 }

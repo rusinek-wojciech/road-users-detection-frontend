@@ -36,7 +36,7 @@ const App = () => {
         onClose={onSidebarClose}
         onToggle={onSidebarToggle}
       />
-      <ContentContainer model={model} />
+      {model && <ContentContainer model={model} />}
     </ThemeProvider>
   )
 }
