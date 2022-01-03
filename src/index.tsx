@@ -2,7 +2,7 @@ import ReactDOM from 'react-dom'
 import { StrictMode } from 'react'
 import App from './App'
 import { AppContextProvider } from './store/Context'
-import * as serviceWorker from './serviceWorker'
+import * as serviceWorkerRegistration from './serviceWorkerRegistration'
 
 ReactDOM.render(
   <StrictMode>
@@ -13,6 +13,6 @@ ReactDOM.render(
   document.getElementById('root')
 )
 
-serviceWorker.register({
+serviceWorkerRegistration.register({
   onSuccess: () => console.log('Registered service worker'),
 })
