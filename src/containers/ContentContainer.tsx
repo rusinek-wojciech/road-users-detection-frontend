@@ -167,6 +167,10 @@ const ContentContainer = ({ model }: Props) => {
               style={{
                 width: '100%',
                 objectFit: 'fill',
+                display: 'block',
+              }}
+              videoConstraints={{
+                facingMode: 'environment',
               }}
             />
           </CardActionArea>
