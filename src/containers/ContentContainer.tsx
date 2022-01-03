@@ -12,11 +12,11 @@ import {
 import FileUploadIcon from '@mui/icons-material/FileUpload'
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera'
 import Webcam from 'react-webcam'
-import { drawObjects } from '../services/drawing'
+import { draw } from '../services/drawing'
 import { DetectedObject, createPredictions } from '../services/detection'
 
 interface Props {
-  model: tf.GraphModel | null
+  model: tf.GraphModel
 }
 
 type Mode = 'image' | 'webcam' | 'empty'
@@ -30,97 +30,92 @@ const ContentContainer = ({ model }: Props) => {
   const webcamRef = useRef<Webcam>(null)
   const imageRef = useRef<HTMLImageElement | null>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const requestRef = useRef<number>()
+  const requestDraw = useRef<number>()
+  const stop = useRef<boolean>(false)
 
+  // start rendering boxes
   useEffect(() => {
-    const ctx = canvasRef.current?.getContext('2d')
-    const draw = () => {
-      if (ctx && canvasRef.current && cardRef.current) {
-        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
-        const { clientWidth, clientHeight } = cardRef.current
-        canvasRef.current.width = clientWidth
-        canvasRef.current.height = clientHeight
-        if (imageRef && imageRef.current) {
-          drawObjects(
-            detectedObjects,
-            ctx,
-            clientWidth / imageRef.current.naturalWidth,
-            clientHeight / imageRef.current.naturalHeight
-          )
-        } else if (mode === 'webcam' && webcamRef.current) {
-          if (webcamRef.current.video) {
-            const { video } = webcamRef.current
-            drawObjects(
-              detectedObjects,
-              ctx,
-              clientWidth / video.videoWidth,
-              clientHeight / video.videoHeight
-            )
-          }
+    const animateDraw = () => {
+      if (canvasRef.current && cardRef.current) {
+        const source = webcamRef.current?.video || imageRef.current
+        if (source) {
+          draw(detectedObjects, source, canvasRef.current, cardRef.current)
         }
       }
-      requestRef.current = requestAnimationFrame(draw)
+      requestDraw.current = requestAnimationFrame(animateDraw)
     }
-    requestRef.current = requestAnimationFrame(draw)
+    animateDraw()
+    return () => cancelAnimationFrame(requestDraw?.current!)
+  }, [detectedObjects])
 
+  // start detecting for webcam
+  useEffect(() => {
+    if (mode === 'webcam' && webcamRef?.current?.video) {
+      const { video } = webcamRef.current
+
+      const animatePredict = () => {
+        if (!stop.current) {
+          createPredictions(model, video)
+            .then((objects) => setDetectedObjects(objects))
+            .then(() => requestAnimationFrame(animatePredict))
+        }
+      }
+
+      video.addEventListener(
+        'loadeddata',
+        () => {
+          stop.current = false
+          animatePredict()
+        },
+        {
+          once: true,
+        }
+      )
+    }
     return () => {
-      if (requestRef.current) {
-        cancelAnimationFrame(requestRef.current)
-      }
-    }
-  }, [detectedObjects, mode])
-
-  useEffect(() => {
-    const detectImage = async (image: HTMLImageElement) => {
-      if (model) {
-        createPredictions(model, image).then((objects) =>
-          setDetectedObjects(objects)
-        )
-      }
-    }
-
-    const detectVideo = async (video: HTMLVideoElement) => {
-      if (model && video) {
-        createPredictions(model, video).then((objects) =>
-          setDetectedObjects(objects)
-        )
-      }
-    }
-
-    if (mode === 'webcam' && webcamRef && webcamRef.current) {
-      setInterval(() => {
-        if (webcamRef.current && webcamRef.current.video) {
-          detectVideo(webcamRef.current.video)
-        }
-      }, 500)
-    } else if (mode === 'image' && imageRef && imageRef.current) {
-      detectImage(imageRef.current)
+      stop.current = true
     }
   }, [mode, model])
 
+  // start detecting for image
+  useEffect(() => {
+    if (mode === 'image' && imageRef?.current && !loading) {
+      setTimeout(() => {
+        createPredictions(model, imageRef.current!).then((objects) =>
+          setDetectedObjects(objects)
+        )
+      }, 500)
+    }
+  }, [mode, model, loading])
+
   const onChangeImage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setMode('empty')
     const { files } = event.target
     if (
       files &&
       files.length > 0 &&
-      /\.(jpe?g|png|gif)$/i.test(files[0].name)
+      /\.(jpe?g|png|gif)$/i.test(files[0].name) &&
+      !loading
     ) {
+      setLoading(true)
       const image = new Image()
       image.src = URL.createObjectURL(files[0])
-      image.addEventListener('load', () => {
-        setDetectedObjects([])
-        imageRef.current = image
-        setMode('image')
-      })
+      imageRef.current = image
+      image.addEventListener(
+        'load',
+        () => {
+          setDetectedObjects([])
+          setMode('image')
+          setLoading(false)
+        },
+        { once: true }
+      )
     }
   }
 
   const openCamera = () => {
-    setMode('webcam')
-    setDetectedObjects([])
-    imageRef.current = null
-    if (webcamRef.current) {
+    if (mode !== 'webcam') {
+      setDetectedObjects([])
+      setMode('webcam')
     }
   }
 
