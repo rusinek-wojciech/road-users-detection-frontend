@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react'
 import * as tf from '@tensorflow/tfjs'
 import { warmUp } from '../services/detection'
-import { config } from '../services/config'
 import { useAppDispatch, useAppState } from '../store/Context'
 import { setModel } from '../store/actions'
 
 const useModel = () => {
-  const { model } = useAppState()
+  const { model, modelConfig } = useAppState()
   const dispatch = useAppDispatch()
   const [loading, setLoading] = useState<boolean>(!model)
 
@@ -14,7 +13,7 @@ const useModel = () => {
     if (!model) {
       tf.setBackend('webgl')
       tf.ready()
-        .then(() => tf.loadGraphModel(config.PATH))
+        .then(() => tf.loadGraphModel(modelConfig.path))
         .then((m) => {
           dispatch(setModel(m))
           warmUp(m)
@@ -22,7 +21,7 @@ const useModel = () => {
         .catch(() => console.error('Failed to fetch model'))
         .finally(() => setTimeout(() => setLoading(false), 3000))
     }
-  }, [dispatch, model])
+  }, [dispatch, model, modelConfig])
 
   return [model, loading] as const
 }
