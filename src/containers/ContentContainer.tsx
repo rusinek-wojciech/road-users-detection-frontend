@@ -1,27 +1,27 @@
 import { useEffect, useRef, useState } from 'react'
 import * as tf from '@tensorflow/tfjs'
-import {
-  Button,
-  Card,
-  CardActionArea,
-  CardMedia,
-  Container,
-  Stack,
-  Typography,
-} from '@mui/material'
+import Webcam from 'react-webcam'
 import FileUploadIcon from '@mui/icons-material/FileUpload'
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera'
-import Webcam from 'react-webcam'
-import { draw } from '../services/drawing'
+import Card from '@mui/material/Card'
+import CardActionArea from '@mui/material/CardActionArea'
+import CardMedia from '@mui/material/CardMedia'
+import Typography from '@mui/material/Typography'
+import Container from '@mui/material/Container'
+import Stack from '@mui/material/Stack'
+import Button from '@mui/material/Button'
 import { DetectedObject, createPredictions } from '../services/detection'
+import { draw } from '../services/drawing'
+import { Config } from '../services/config'
 
 interface Props {
   model: tf.GraphModel
+  modelConfig: Config
 }
 
 type Mode = 'image' | 'webcam' | 'empty'
 
-const ContentContainer = ({ model }: Props) => {
+const ContentContainer = ({ model, modelConfig }: Props) => {
   const [detectedObjects, setDetectedObjects] = useState<DetectedObject[]>([])
   const [mode, setMode] = useState<Mode>('empty')
   const [loading, setLoading] = useState<boolean>(false)
@@ -55,7 +55,7 @@ const ContentContainer = ({ model }: Props) => {
 
       const animatePredict = () => {
         if (!stop.current) {
-          createPredictions(model, video)
+          createPredictions(model, video, modelConfig)
             .then((objects) => setDetectedObjects(objects))
             .then(() => requestAnimationFrame(animatePredict))
         }
@@ -75,18 +75,18 @@ const ContentContainer = ({ model }: Props) => {
     return () => {
       stop.current = true
     }
-  }, [mode, model])
+  }, [mode, model, modelConfig])
 
   // start detecting for image
   useEffect(() => {
     if (mode === 'image' && imageRef?.current && !loading) {
       setTimeout(() => {
-        createPredictions(model, imageRef.current!).then((objects) =>
-          setDetectedObjects(objects)
+        createPredictions(model, imageRef.current!, modelConfig).then(
+          (objects) => setDetectedObjects(objects)
         )
       }, 500)
     }
-  }, [mode, model, loading])
+  }, [mode, model, loading, modelConfig])
 
   const onChangeImage = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { files } = event.target

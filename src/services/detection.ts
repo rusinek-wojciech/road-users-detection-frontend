@@ -1,5 +1,5 @@
 import * as tf from '@tensorflow/tfjs'
-import { config } from './config'
+import { Config } from './config'
 
 export interface DetectedObject {
   label: {
@@ -19,7 +19,8 @@ export const warmUp = (model: tf.GraphModel): void => {
 
 export const createPredictions = async (
   model: tf.GraphModel,
-  src: HTMLImageElement | HTMLVideoElement
+  src: HTMLImageElement | HTMLVideoElement,
+  config: Config
 ): Promise<DetectedObject[]> => {
   const width =
     src instanceof HTMLVideoElement ? src.videoWidth : src.naturalWidth
@@ -28,13 +29,14 @@ export const createPredictions = async (
   tf.engine().startScope()
   try {
     const predictions = (await model.executeAsync(
-      await getTensorImage(src, config.MODEL_WIDTH, config.MODEL_HEIGHT)
+      await getTensorImage(src, config.modelWidth, config.modelHeight)
     )) as any
     return detectObjects(
-      predictions[config.BOXES_INDEX].arraySync()[0],
-      predictions[config.CLASSES_INDEX].arraySync()[0],
-      predictions[config.SCORES_INDEX].arraySync()[0],
-      config.TRESHOLD,
+      predictions[config.index.boxes].arraySync()[0],
+      predictions[config.index.classes].arraySync()[0],
+      predictions[config.index.scores].arraySync()[0],
+      config.labels,
+      config.treshold,
       width,
       height
     )
@@ -50,6 +52,10 @@ const detectObjects = (
   boxes: number[][],
   classes: number[],
   scores: number[],
+  labels: {
+    name: string
+    color: string
+  }[],
   threshold: number,
   imgWidth: number,
   imgHeight: number
@@ -59,7 +65,7 @@ const detectObjects = (
     .map((box, i) => {
       const [minY, minX, maxY, maxX] = box
       return {
-        label: config.LABELS[classes[i] - 1],
+        label: labels[classes[i] - 1],
         score: scores[i].toFixed(4),
         box: [
           minX * imgWidth,

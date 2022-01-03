@@ -1,57 +1,88 @@
 import Box from '@mui/material/Box'
 import Drawer from '@mui/material/Drawer'
+import ListSubheader from '@mui/material/ListSubheader'
 import List from '@mui/material/List'
 import Divider from '@mui/material/Divider'
 import ListItem from '@mui/material/ListItem'
-import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
-import InboxIcon from '@mui/icons-material/MoveToInbox'
-import MailIcon from '@mui/icons-material/Mail'
+import LightModeIcon from '@mui/icons-material/LightMode'
+import DarkModeIcon from '@mui/icons-material/DarkMode'
+import FormatColorFillIcon from '@mui/icons-material/FormatColorFill'
+import { Avatar, ListItemAvatar, PaletteMode } from '@mui/material'
 
 interface Props {
   enabled: boolean
-  onClose: () => void
-  onToggle: () => void
+  closeSidebar: () => void
+  toggleSidebar: () => void
+  paletteMode: PaletteMode
+  togglePaletteMode: () => void
+  labels: {
+    name: string
+    color: string
+  }[]
 }
 
-const Sidebar = ({ enabled, onClose, onToggle }: Props) => {
+const Sidebar = (props: Props) => {
+  const {
+    enabled,
+    closeSidebar,
+    toggleSidebar,
+    paletteMode,
+    togglePaletteMode,
+    labels,
+  } = props
+
+  const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1)
+
   return (
     <div>
-      <Drawer anchor={'left'} open={enabled} onClose={onClose}>
+      <Drawer anchor={'left'} open={enabled} onClose={closeSidebar}>
         <Box
           sx={{ width: 250 }}
           role='presentation'
-          onClick={onToggle}
-          onKeyDown={onToggle}
+          onClick={toggleSidebar}
+          onKeyDown={toggleSidebar}
         >
-          <List>
-            <ListItem button key='Inbox'>
-              <ListItemIcon>
-                <InboxIcon />
-              </ListItemIcon>
-              <ListItemText primary='Inbox' />
-            </ListItem>
-            <ListItem button key='Drafts'>
-              <ListItemIcon>
-                <MailIcon />
-              </ListItemIcon>
-              <ListItemText primary='Drafts' />
+          <List subheader={<ListSubheader>Options</ListSubheader>}>
+            <ListItem button key='Inbox' onClick={togglePaletteMode}>
+              <ListItemAvatar>
+                <Avatar>
+                  {paletteMode === 'dark' ? (
+                    <LightModeIcon />
+                  ) : (
+                    <DarkModeIcon />
+                  )}
+                </Avatar>
+              </ListItemAvatar>
+
+              {paletteMode === 'dark' ? (
+                <ListItemText
+                  primary='Light Mode'
+                  secondary='Change to light mode'
+                />
+              ) : (
+                <ListItemText
+                  primary='Dark Mode'
+                  secondary='Change to dark mode'
+                />
+              )}
             </ListItem>
           </List>
           <Divider />
-          <List>
-            <ListItem button key='Trash'>
-              <ListItemIcon>
-                <InboxIcon />
-              </ListItemIcon>
-              <ListItemText primary='Trash' />
-            </ListItem>
-            <ListItem button key='Spam'>
-              <ListItemIcon>
-                <MailIcon />
-              </ListItemIcon>
-              <ListItemText primary='Spam' />
-            </ListItem>
+          <List subheader={<ListSubheader>Labels</ListSubheader>}>
+            {labels.map((label) => (
+              <ListItem button key={label.name}>
+                <ListItemAvatar>
+                  <Avatar style={{ backgroundColor: label.color }}>
+                    <FormatColorFillIcon />
+                  </Avatar>
+                </ListItemAvatar>
+                <ListItemText
+                  primary={capitalize(label.name)}
+                  secondary={label.color}
+                />
+              </ListItem>
+            ))}
           </List>
         </Box>
       </Drawer>

@@ -10,7 +10,7 @@ import { useAppDispatch, useAppState } from './store/Context'
 import { toggleSidebar, closeSidebar, togglePaletteMode } from './store/actions'
 
 const App = () => {
-  const { sidebarEnabled, paletteMode } = useAppState()
+  const { sidebarEnabled, paletteMode, modelConfig } = useAppState()
   const dispatch = useAppDispatch()
   const [model, loading] = useModel()
   const theme = useMemo(
@@ -18,7 +18,7 @@ const App = () => {
     [paletteMode]
   )
 
-  const onToggleMode = () => dispatch(togglePaletteMode())
+  const onTogglePaletteMode = () => dispatch(togglePaletteMode())
   const onCloseSidebar = () => dispatch(closeSidebar())
   const onToggleSidebar = () => dispatch(toggleSidebar())
 
@@ -27,16 +27,19 @@ const App = () => {
       {loading && <BackdropSpinner />}
       <CssBaseline />
       <Navbar
-        mode={paletteMode}
-        toggleMode={onToggleMode}
+        paletteMode={paletteMode}
+        togglePaletteMode={onTogglePaletteMode}
         toggleSidebar={onToggleSidebar}
       />
       <Sidebar
         enabled={sidebarEnabled}
-        onClose={onCloseSidebar}
-        onToggle={onToggleSidebar}
+        closeSidebar={onCloseSidebar}
+        toggleSidebar={onToggleSidebar}
+        paletteMode={paletteMode}
+        togglePaletteMode={onTogglePaletteMode}
+        labels={modelConfig.labels}
       />
-      {model && <ContentContainer model={model} />}
+      {model && <ContentContainer model={model} modelConfig={modelConfig} />}
     </ThemeProvider>
   )
 }

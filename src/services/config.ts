@@ -1,17 +1,19 @@
-interface Config {
-  LABELS: {
+export interface Config {
+  labels: {
     name: string
     color: string
   }[]
-  TRESHOLD: number
+  treshold: number
   // // model pretrained sizes
-  MODEL_WIDTH: number
-  MODEL_HEIGHT: number
+  modelWidth: number
+  modelHeight: number
   // objects indecies
-  BOXES_INDEX: number // [1,2,3,4]
-  CLASSES_INDEX: number // liczby całk
-  SCORES_INDEX: number // liczby 0 - 1
-  PATH: string
+  index: {
+    boxes: number // [1,2,3,4]
+    classes: number // liczby całk
+    scores: number // liczby 0 - 1
+  }
+  path: string
 }
 
 const getModelPath = (model: string): string => {
@@ -19,15 +21,15 @@ const getModelPath = (model: string): string => {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const ssdMobilenet: Config = {
-  LABELS: [
+export const ssdMobilenet = (): Config => ({
+  labels: [
     {
       name: 'bike',
-      color: 'red',
+      color: '#D10000',
     },
     {
       name: 'scooter',
-      color: 'yellow',
+      color: '#FFC400',
     },
     {
       name: 'rolls',
@@ -42,14 +44,13 @@ const ssdMobilenet: Config = {
       color: '#008B8B',
     },
   ],
-  MODEL_WIDTH: 640,
-  MODEL_HEIGHT: 640,
-  TRESHOLD: 0.55,
-  BOXES_INDEX: 5,
-  CLASSES_INDEX: 3,
-  SCORES_INDEX: 6,
-  PATH: getModelPath('ssd_mobilenet'),
-}
-
-// set current profle
-export const config: Config = ssdMobilenet
+  modelWidth: 640,
+  modelHeight: 640,
+  treshold: 0.55,
+  index: {
+    boxes: 5,
+    classes: 3,
+    scores: 6,
+  },
+  path: getModelPath('ssd_mobilenet'),
+})

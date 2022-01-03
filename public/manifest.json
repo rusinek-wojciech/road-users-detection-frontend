@@ -1,6 +1,6 @@
 {
-  "short_name": "RTR",
-  "name": "Road Traffic Recognition",
+  "short_name": "Road Users",
+  "name": "Road Users Detection",
   "icons": [
     {
       "src": "favicon.ico",

@@ -1,22 +1,20 @@
-import {
-  AppBar,
-  Box,
-  IconButton,
-  PaletteMode,
-  Toolbar,
-  Typography,
-} from '@mui/material'
 import MenuIcon from '@mui/icons-material/Menu'
 import LightModeIcon from '@mui/icons-material/LightMode'
 import DarkModeIcon from '@mui/icons-material/DarkMode'
+import Box from '@mui/material/Box'
+import AppBar from '@mui/material/AppBar'
+import IconButton from '@mui/material/IconButton'
+import Toolbar from '@mui/material/Toolbar'
+import Typography from '@mui/material/Typography'
+import { PaletteMode } from '@mui/material'
 
 interface Props {
-  mode: PaletteMode
-  toggleMode: () => void
+  paletteMode: PaletteMode
+  togglePaletteMode: () => void
   toggleSidebar: () => void
 }
 
-const Navbar = ({ mode, toggleMode, toggleSidebar }: Props) => {
+const Navbar = ({ paletteMode, togglePaletteMode, toggleSidebar }: Props) => {
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position='static'>
@@ -37,16 +35,16 @@ const Navbar = ({ mode, toggleMode, toggleSidebar }: Props) => {
             component='div'
             sx={{ flexGrow: 1 }}
           >
-            Road Traffic Recognition
+            Road Users Detection
           </Typography>
           <IconButton
             size='large'
             aria-label='change color mode'
             edge='end'
             color='inherit'
-            onClick={toggleMode}
+            onClick={togglePaletteMode}
           >
-            {mode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}
+            {paletteMode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}
           </IconButton>
         </Toolbar>
       </AppBar>
