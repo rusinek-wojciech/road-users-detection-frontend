@@ -19,8 +19,8 @@ const App = () => {
   )
 
   const onToggleMode = () => dispatch(togglePaletteMode())
-  const onSidebarClose = () => dispatch(closeSidebar())
-  const onSidebarToggle = () => dispatch(toggleSidebar())
+  const onCloseSidebar = () => dispatch(closeSidebar())
+  const onToggleSidebar = () => dispatch(toggleSidebar())
 
   return (
     <ThemeProvider theme={theme}>
@@ -29,12 +29,12 @@ const App = () => {
       <Navbar
         mode={paletteMode}
         toggleMode={onToggleMode}
-        toggleSidebar={onSidebarToggle}
+        toggleSidebar={onToggleSidebar}
       />
       <Sidebar
         enabled={sidebarEnabled}
-        onClose={onSidebarClose}
-        onToggle={onSidebarToggle}
+        onClose={onCloseSidebar}
+        onToggle={onToggleSidebar}
       />
       {model && <ContentContainer model={model} />}
     </ThemeProvider>
