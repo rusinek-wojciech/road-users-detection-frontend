@@ -123,7 +123,7 @@ const ContentContainer = ({ model, modelConfig }: Props) => {
   switch (mode) {
     case 'image':
       content = (
-        <Card ref={cardRef}>
+        <Card ref={cardRef} style={{ width: 'fit-content', margin: 'auto' }}>
           <CardActionArea>
             <canvas
               ref={canvasRef}
@@ -137,6 +137,7 @@ const ContentContainer = ({ model, modelConfig }: Props) => {
               }}
             />
             <CardMedia
+              style={{ width: '100%', objectFit: 'contain', maxHeight: '83vh' }}
               component='img'
               image={imageRef!.current!.src}
               alt='detected image'
@@ -147,7 +148,7 @@ const ContentContainer = ({ model, modelConfig }: Props) => {
       break
     case 'webcam':
       content = (
-        <Card ref={cardRef}>
+        <Card ref={cardRef} style={{ width: 'fit-content', margin: 'auto' }}>
           <CardActionArea>
             <canvas
               ref={canvasRef}
@@ -166,8 +167,9 @@ const ContentContainer = ({ model, modelConfig }: Props) => {
               width='500'
               style={{
                 width: '100%',
-                objectFit: 'fill',
+                objectFit: 'contain',
                 display: 'block',
+                maxHeight: '83vh',
               }}
               videoConstraints={{
                 facingMode: 'environment',
@@ -191,8 +193,8 @@ const ContentContainer = ({ model, modelConfig }: Props) => {
   }
 
   return (
-    <main style={{ paddingTop: '1rem' }}>
-      <Container>
+    <main style={{ paddingTop: '1rem', paddingBottom: '1rem' }}>
+      <Container style={{ paddingLeft: '1rem', paddingRight: '1rem' }}>
         {content}
         <Stack
           sx={{ pt: 4 }}

@@ -84,6 +84,7 @@ const Sidebar = (props: Props) => {
               </ListItem>
             ))}
           </List>
+          <Divider />
         </Box>
       </Drawer>
     </div>
