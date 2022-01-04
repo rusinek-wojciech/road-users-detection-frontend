@@ -10,11 +10,15 @@ import { PaletteMode } from '@mui/material'
 
 interface Props {
   paletteMode: PaletteMode
-  togglePaletteMode: () => void
-  toggleSidebar: () => void
+  onTogglePaletteMode: () => void
+  onToggleSidebar: () => void
 }
 
-const Navbar = ({ paletteMode, togglePaletteMode, toggleSidebar }: Props) => {
+const Navbar = ({
+  paletteMode,
+  onTogglePaletteMode,
+  onToggleSidebar,
+}: Props) => {
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position='static'>
@@ -25,7 +29,7 @@ const Navbar = ({ paletteMode, togglePaletteMode, toggleSidebar }: Props) => {
             color='inherit'
             aria-label='open drawer'
             sx={{ mr: 2 }}
-            onClick={toggleSidebar}
+            onClick={onToggleSidebar}
           >
             <MenuIcon />
           </IconButton>
@@ -42,7 +46,7 @@ const Navbar = ({ paletteMode, togglePaletteMode, toggleSidebar }: Props) => {
             aria-label='change color mode'
             edge='end'
             color='inherit'
-            onClick={togglePaletteMode}
+            onClick={onTogglePaletteMode}
           >
             {paletteMode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}
           </IconButton>

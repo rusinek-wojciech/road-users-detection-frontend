@@ -11,40 +11,38 @@ import FormatColorFillIcon from '@mui/icons-material/FormatColorFill'
 import { Avatar, ListItemAvatar, PaletteMode } from '@mui/material'
 
 interface Props {
-  enabled: boolean
-  closeSidebar: () => void
-  toggleSidebar: () => void
+  sidebarEnabled: boolean
+  onCloseSidebar: () => void
+  onToggleSidebar: () => void
   paletteMode: PaletteMode
-  togglePaletteMode: () => void
+  onTogglePaletteMode: () => void
   labels: {
     name: string
     color: string
   }[]
 }
 
-const Sidebar = (props: Props) => {
-  const {
-    enabled,
-    closeSidebar,
-    toggleSidebar,
-    paletteMode,
-    togglePaletteMode,
-    labels,
-  } = props
-
+const Sidebar = ({
+  sidebarEnabled,
+  onCloseSidebar,
+  onToggleSidebar,
+  paletteMode,
+  onTogglePaletteMode,
+  labels,
+}: Props) => {
   const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1)
 
   return (
     <div>
-      <Drawer anchor={'left'} open={enabled} onClose={closeSidebar}>
+      <Drawer anchor={'left'} open={sidebarEnabled} onClose={onCloseSidebar}>
         <Box
           sx={{ width: 250 }}
           role='presentation'
-          onClick={toggleSidebar}
-          onKeyDown={toggleSidebar}
+          onClick={onToggleSidebar}
+          onKeyDown={onToggleSidebar}
         >
           <List subheader={<ListSubheader>Options</ListSubheader>}>
-            <ListItem button key='Inbox' onClick={togglePaletteMode}>
+            <ListItem button onClick={onTogglePaletteMode}>
               <ListItemAvatar>
                 <Avatar>
                   {paletteMode === 'dark' ? (
@@ -54,7 +52,6 @@ const Sidebar = (props: Props) => {
                   )}
                 </Avatar>
               </ListItemAvatar>
-
               {paletteMode === 'dark' ? (
                 <ListItemText
                   primary='Light Mode'
@@ -70,8 +67,8 @@ const Sidebar = (props: Props) => {
           </List>
           <Divider />
           <List subheader={<ListSubheader>Labels</ListSubheader>}>
-            {labels.map((label) => (
-              <ListItem button key={label.name}>
+            {labels.map((label, index) => (
+              <ListItem button key={index}>
                 <ListItemAvatar>
                   <Avatar style={{ backgroundColor: label.color }}>
                     <FormatColorFillIcon />

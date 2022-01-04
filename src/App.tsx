@@ -10,9 +10,9 @@ import { useAppDispatch, useAppState } from './store/Context'
 import { toggleSidebar, closeSidebar, togglePaletteMode } from './store/actions'
 
 const App = () => {
-  const { sidebarEnabled, paletteMode, modelConfig } = useAppState()
+  const { sidebarEnabled, paletteMode } = useAppState()
   const dispatch = useAppDispatch()
-  const [model, loading] = useModel()
+  const [model, modelConfig, loading] = useModel()
   const theme = useMemo(
     () => createTheme(getDesignTokens(paletteMode)),
     [paletteMode]
@@ -28,15 +28,15 @@ const App = () => {
       <CssBaseline />
       <Navbar
         paletteMode={paletteMode}
-        togglePaletteMode={onTogglePaletteMode}
-        toggleSidebar={onToggleSidebar}
+        onToggleSidebar={onToggleSidebar}
+        onTogglePaletteMode={onTogglePaletteMode}
       />
       <Sidebar
-        enabled={sidebarEnabled}
-        closeSidebar={onCloseSidebar}
-        toggleSidebar={onToggleSidebar}
+        sidebarEnabled={sidebarEnabled}
+        onCloseSidebar={onCloseSidebar}
+        onToggleSidebar={onToggleSidebar}
         paletteMode={paletteMode}
-        togglePaletteMode={onTogglePaletteMode}
+        onTogglePaletteMode={onTogglePaletteMode}
         labels={modelConfig.labels}
       />
       {model && <ContentContainer model={model} modelConfig={modelConfig} />}

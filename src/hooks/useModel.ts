@@ -23,7 +23,7 @@ const useModel = () => {
     }
   }, [dispatch, model, modelConfig])
 
-  return [model, loading] as const
+  return [model, modelConfig, loading] as const
 }
 
 export default useModel
