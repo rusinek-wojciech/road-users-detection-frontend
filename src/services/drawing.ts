@@ -6,9 +6,9 @@ const drawText = (
   y: number,
   ctx: CanvasRenderingContext2D
 ): void => {
-  ctx.font = '1rem Roboto'
+  ctx.font = 'lighter 0.9rem Roboto'
   ctx.strokeStyle = 'black'
-  ctx.lineWidth = 6
+  ctx.lineWidth = 5
   ctx.strokeText(text, x, y)
   ctx.fillStyle = 'white'
   ctx.fillText(text, x, y)
@@ -35,6 +35,7 @@ const drawObjects = (
   for (let i = 0; i < objects.length; i++) {
     const { label, box, score } = objects[i]
     const resizeBox: [number, number, number, number] = [...box]
+
     if (widthScale) {
       resizeBox[0] *= widthScale
       resizeBox[2] *= widthScale
@@ -43,7 +44,18 @@ const drawObjects = (
       resizeBox[1] *= heightScale
       resizeBox[3] *= heightScale
     }
-    drawText(`${label.name}: ${score}`, resizeBox[0], resizeBox[1] - 5, ctx)
+
+    if (resizeBox[1] <= 40) {
+      drawText(
+        `${label.name} ${score}`,
+        resizeBox[0] + 5,
+        resizeBox[1] + 20,
+        ctx
+      )
+    } else {
+      drawText(`${label.name} ${score}`, resizeBox[0], resizeBox[1] - 5, ctx)
+    }
+
     drawBox(resizeBox, label.color, ctx)
   }
 }
