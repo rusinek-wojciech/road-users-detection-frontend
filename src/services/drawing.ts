@@ -68,7 +68,7 @@ export const draw = (
 ): void => {
   const ctx = canvas.getContext('2d')
   if (ctx) {
-    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
+    // ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
     const { clientWidth, clientHeight } = container
     canvas.width = clientWidth
     canvas.height = clientHeight
