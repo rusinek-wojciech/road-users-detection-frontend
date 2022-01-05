@@ -10,9 +10,10 @@ import Typography from '@mui/material/Typography'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import Button from '@mui/material/Button'
-import { DetectedObject, createPredictions } from '../services/detection'
+import { DetectedObject, detect } from '../services/detection'
 import { draw } from '../services/drawing'
 import { Config } from '../services/config'
+import { Dialog } from '@mui/material'
 
 interface Props {
   model: tf.GraphModel
@@ -25,6 +26,7 @@ const ContentContainer = ({ model, modelConfig }: Props) => {
   const [detectedObjects, setDetectedObjects] = useState<DetectedObject[]>([])
   const [mode, setMode] = useState<Mode>('empty')
   const [loading, setLoading] = useState<boolean>(false)
+  const [fullscreen, setFullscreen] = useState<boolean>(false)
 
   const cardRef = useRef<HTMLDivElement>(null)
   const webcamRef = useRef<Webcam>(null)
@@ -55,8 +57,8 @@ const ContentContainer = ({ model, modelConfig }: Props) => {
 
       const animatePredict = () => {
         if (!stop.current) {
-          createPredictions(model, video, modelConfig)
-            .then((objects) => setDetectedObjects(objects))
+          detect(model, modelConfig, video, video.videoWidth, video.videoHeight)
+            .then(setDetectedObjects)
             .then(() => requestAnimationFrame(animatePredict))
         }
       }
@@ -67,9 +69,7 @@ const ContentContainer = ({ model, modelConfig }: Props) => {
           stop.current = false
           animatePredict()
         },
-        {
-          once: true,
-        }
+        { once: true }
       )
     }
     return () => {
@@ -81,9 +81,13 @@ const ContentContainer = ({ model, modelConfig }: Props) => {
   useEffect(() => {
     if (mode === 'image' && imageRef?.current && !loading) {
       setTimeout(() => {
-        createPredictions(model, imageRef.current!, modelConfig).then(
-          (objects) => setDetectedObjects(objects)
-        )
+        detect(
+          model,
+          modelConfig,
+          imageRef.current!,
+          imageRef.current!.naturalWidth,
+          imageRef.current!.naturalHeight
+        ).then(setDetectedObjects)
       }, 500)
     }
   }, [mode, model, loading, modelConfig])
@@ -100,10 +104,10 @@ const ContentContainer = ({ model, modelConfig }: Props) => {
       const image = new Image()
       image.src = URL.createObjectURL(files[0])
       imageRef.current = image
+      setDetectedObjects([])
       image.addEventListener(
         'load',
         () => {
-          setDetectedObjects([])
           setMode('image')
           setLoading(false)
         },
@@ -119,12 +123,14 @@ const ContentContainer = ({ model, modelConfig }: Props) => {
     }
   }
 
+  const toggleFullScreen = () => setFullscreen((prev) => !prev)
+
   let content: JSX.Element
   switch (mode) {
     case 'image':
       content = (
         <Card ref={cardRef} style={{ width: 'fit-content', margin: 'auto' }}>
-          <CardActionArea>
+          <CardActionArea onClick={toggleFullScreen}>
             <canvas
               ref={canvasRef}
               style={{
@@ -137,7 +143,11 @@ const ContentContainer = ({ model, modelConfig }: Props) => {
               }}
             />
             <CardMedia
-              style={{ width: '100%', objectFit: 'contain', maxHeight: '83vh' }}
+              style={{
+                width: '100%',
+                objectFit: 'contain',
+                maxHeight: fullscreen ? '100vh' : '83vh',
+              }}
               component='img'
               image={imageRef!.current!.src}
               alt='detected image'
@@ -149,7 +159,7 @@ const ContentContainer = ({ model, modelConfig }: Props) => {
     case 'webcam':
       content = (
         <Card ref={cardRef} style={{ width: 'fit-content', margin: 'auto' }}>
-          <CardActionArea>
+          <CardActionArea onClick={toggleFullScreen}>
             <canvas
               ref={canvasRef}
               style={{
@@ -169,7 +179,7 @@ const ContentContainer = ({ model, modelConfig }: Props) => {
                 width: '100%',
                 objectFit: 'contain',
                 display: 'block',
-                maxHeight: '83vh',
+                maxHeight: fullscreen ? '100vh' : '83vh',
               }}
               videoConstraints={{
                 facingMode: 'environment',
@@ -190,6 +200,20 @@ const ContentContainer = ({ model, modelConfig }: Props) => {
           Please upload your photo
         </Typography>
       )
+  }
+
+  if (fullscreen) {
+    content = (
+      <Dialog
+        keepMounted
+        open={fullscreen}
+        onClose={toggleFullScreen}
+        fullScreen
+        style={{ width: '100%' }}
+      >
+        {content}
+      </Dialog>
+    )
   }
 
   return (
