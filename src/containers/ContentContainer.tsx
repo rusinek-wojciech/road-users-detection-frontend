@@ -23,7 +23,6 @@ interface Props {
 type Mode = 'image' | 'webcam' | 'empty'
 
 const ContentContainer = ({ model, modelConfig }: Props) => {
-  const [detectedObjects, setDetectedObjects] = useState<DetectedObject[]>([])
   const [mode, setMode] = useState<Mode>('empty')
   const [loading, setLoading] = useState<boolean>(false)
   const [fullscreen, setFullscreen] = useState<boolean>(false)
@@ -33,33 +32,36 @@ const ContentContainer = ({ model, modelConfig }: Props) => {
   const imageRef = useRef<HTMLImageElement | null>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const requestDraw = useRef<number>()
+  const requestDetect = useRef<number>()
   const stop = useRef<boolean>(false)
-
-  // start rendering boxes
-  useEffect(() => {
-    const animateDraw = () => {
-      if (canvasRef.current && cardRef.current) {
-        const source = webcamRef.current?.video || imageRef.current
-        if (source) {
-          draw(detectedObjects, source, canvasRef.current, cardRef.current)
-        }
-      }
-      requestDraw.current = requestAnimationFrame(animateDraw)
-    }
-    animateDraw()
-    return () => cancelAnimationFrame(requestDraw?.current!)
-  }, [detectedObjects])
 
   // start detecting for webcam
   useEffect(() => {
     if (mode === 'webcam' && webcamRef?.current?.video) {
       const { video } = webcamRef.current
 
-      const animatePredict = () => {
+      const animateDraw = (objects: DetectedObject[]) => {
+        console.log('draw video')
+
+        if (canvasRef.current && cardRef.current) {
+          draw(objects, video, canvasRef.current, cardRef.current)
+          requestDraw.current = requestAnimationFrame(() =>
+            animateDraw(objects)
+          )
+        }
+      }
+
+      const animateDetect = () => {
         if (!stop.current) {
           detect(model, modelConfig, video, video.videoWidth, video.videoHeight)
-            .then(setDetectedObjects)
-            .then(() => requestAnimationFrame(animatePredict))
+            .then((o) => {
+              cancelAnimationFrame(requestDraw?.current!)
+              return o
+            })
+            .then(animateDraw)
+            .then(() => {
+              requestDetect.current = requestAnimationFrame(animateDetect)
+            })
         }
       }
 
@@ -67,19 +69,34 @@ const ContentContainer = ({ model, modelConfig }: Props) => {
         'loadeddata',
         () => {
           stop.current = false
-          animatePredict()
+          animateDetect()
         },
         { once: true }
       )
     }
     return () => {
       stop.current = true
+      cancelAnimationFrame(requestDraw?.current!)
+      cancelAnimationFrame(requestDetect?.current!)
     }
   }, [mode, model, modelConfig])
 
   // start detecting for image
   useEffect(() => {
     if (mode === 'image' && imageRef?.current && !loading) {
+      const animateDraw = (objects: DetectedObject[]) => {
+        console.log('draw image')
+        if (canvasRef.current && cardRef.current) {
+          const source = imageRef.current
+          if (source) {
+            draw(objects, source, canvasRef.current, cardRef.current)
+            requestDraw.current = requestAnimationFrame(() =>
+              animateDraw(objects)
+            )
+          }
+        }
+      }
+
       setTimeout(() => {
         detect(
           model,
@@ -87,9 +104,15 @@ const ContentContainer = ({ model, modelConfig }: Props) => {
           imageRef.current!,
           imageRef.current!.naturalWidth,
           imageRef.current!.naturalHeight
-        ).then(setDetectedObjects)
+        )
+          .then((o) => {
+            cancelAnimationFrame(requestDraw?.current!)
+            return o
+          })
+          .then(animateDraw)
       }, 500)
     }
+    return () => cancelAnimationFrame(requestDraw?.current!)
   }, [mode, model, loading, modelConfig])
 
   const onChangeImage = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -104,7 +127,6 @@ const ContentContainer = ({ model, modelConfig }: Props) => {
       const image = new Image()
       image.src = URL.createObjectURL(files[0])
       imageRef.current = image
-      setDetectedObjects([])
       image.addEventListener(
         'load',
         () => {
@@ -118,7 +140,6 @@ const ContentContainer = ({ model, modelConfig }: Props) => {
 
   const openCamera = () => {
     if (mode !== 'webcam') {
-      setDetectedObjects([])
       setMode('webcam')
     }
   }
