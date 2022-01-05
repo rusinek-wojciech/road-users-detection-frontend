@@ -17,24 +17,26 @@ export const warmUp = (model: tf.GraphModel): void => {
     .finally(() => tf.engine().endScope())
 }
 
-export const createPredictions = async (
+export const detect = async (
   model: tf.GraphModel,
-  src: HTMLImageElement | HTMLVideoElement,
-  config: Config
+  config: Config,
+  source: HTMLImageElement | HTMLVideoElement,
+  width: number,
+  height: number
 ): Promise<DetectedObject[]> => {
-  const width =
-    src instanceof HTMLVideoElement ? src.videoWidth : src.naturalWidth
-  const height =
-    src instanceof HTMLVideoElement ? src.videoHeight : src.naturalHeight
   tf.engine().startScope()
+  const { boxes, classes, scores } = config.index
   try {
-    const predictions = (await model.executeAsync(
-      await getTensorImage(src, config.modelWidth, config.modelHeight)
-    )) as any
+    const tensorImage = await getTensorImage(
+      source,
+      config.modelWidth,
+      config.modelHeight
+    )
+    const predictions: any = await model.executeAsync(tensorImage)
     return detectObjects(
-      predictions[config.index.boxes].arraySync()[0],
-      predictions[config.index.classes].arraySync()[0],
-      predictions[config.index.scores].arraySync()[0],
+      predictions[boxes].arraySync()[0],
+      predictions[classes].arraySync()[0],
+      predictions[scores].arraySync()[0],
       config.labels,
       config.treshold,
       width,
@@ -57,8 +59,8 @@ const detectObjects = (
     color: string
   }[],
   threshold: number,
-  imgWidth: number,
-  imgHeight: number
+  width: number,
+  height: number
 ): DetectedObject[] => {
   return boxes
     .filter((box, i) => box && classes[i] && scores[i] > threshold)
@@ -66,24 +68,24 @@ const detectObjects = (
       const [minY, minX, maxY, maxX] = box
       return {
         label: labels[classes[i] - 1],
-        score: scores[i].toFixed(4),
+        score: `${(100.0 * scores[i]).toFixed(0)}%`,
         box: [
-          minX * imgWidth,
-          minY * imgHeight,
-          (maxX - minX) * imgWidth,
-          (maxY - minY) * imgHeight,
+          minX * width,
+          minY * height,
+          (maxX - minX) * width,
+          (maxY - minY) * height,
         ],
       }
     })
 }
 
 const getTensorImage = async (
-  src: HTMLImageElement | HTMLVideoElement,
+  source: HTMLImageElement | HTMLVideoElement,
   width: number,
   height: number
 ): Promise<tf.Tensor<tf.Rank>> => {
   return tf.image
-    .resizeBilinear(await tf.browser.fromPixelsAsync(src), [width, height])
+    .resizeBilinear(await tf.browser.fromPixelsAsync(source), [width, height])
     .toInt()
     .transpose([0, 1, 2])
     .expandDims()
