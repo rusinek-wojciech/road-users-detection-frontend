@@ -12,10 +12,18 @@ interface Props {
   modelConfig: Config
   shouldClose: boolean // if component should be unmounted
   setCloseable: (b: boolean) => void // indicate that component can be unmounted
+  fullscreen?: boolean
 }
 
 const WebcamContainer = (props: Props) => {
-  const { onClickAction, model, modelConfig, shouldClose, setCloseable } = props
+  const {
+    onClickAction,
+    model,
+    modelConfig,
+    shouldClose,
+    setCloseable,
+    fullscreen = false,
+  } = props
 
   const cardRef = useRef<HTMLDivElement>(null)
   const webcamRef = useRef<Webcam>(null)
@@ -109,7 +117,7 @@ const WebcamContainer = (props: Props) => {
             width: '100%',
             objectFit: 'contain',
             display: 'block',
-            maxHeight: '83vh',
+            maxHeight: fullscreen ? '100vh' : '83vh',
           }}
           videoConstraints={{
             facingMode: 'environment',

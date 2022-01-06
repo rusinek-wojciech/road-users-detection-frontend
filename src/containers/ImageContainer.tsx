@@ -10,10 +10,17 @@ interface Props {
   model: GraphModel
   modelConfig: Config
   imageSource: string
+  fullscreen?: boolean
 }
 
 const ImageContainer = (props: Props) => {
-  const { onClickAction, model, modelConfig, imageSource } = props
+  const {
+    onClickAction,
+    model,
+    modelConfig,
+    imageSource,
+    fullscreen = false,
+  } = props
 
   const cardRef = useRef<HTMLDivElement>(null)
   const imageRef = useRef<HTMLImageElement | null>(null)
@@ -90,7 +97,7 @@ const ImageContainer = (props: Props) => {
           style={{
             width: '100%',
             objectFit: 'contain',
-            maxHeight: '83vh',
+            maxHeight: fullscreen ? '100vh' : '83vh',
           }}
           component='img'
           image={imageSource}
