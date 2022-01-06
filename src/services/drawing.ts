@@ -62,22 +62,17 @@ const drawObjects = (
 
 export const draw = (
   objects: DetectedObject[],
-  src: HTMLImageElement | HTMLVideoElement,
   canvas: HTMLCanvasElement,
-  container: HTMLDivElement
+  clientWidth: number,
+  clientHeight: number,
+  width: number,
+  height: number
 ): void => {
   const ctx = canvas.getContext('2d')
   if (ctx) {
-    // ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
-    const { clientWidth, clientHeight } = container
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
     canvas.width = clientWidth
     canvas.height = clientHeight
-
-    const width =
-      src instanceof HTMLVideoElement ? src.videoWidth : src.naturalWidth
-    const height =
-      src instanceof HTMLVideoElement ? src.videoHeight : src.naturalHeight
-
     drawObjects(objects, ctx, clientWidth / width, clientHeight / height)
   }
 }
