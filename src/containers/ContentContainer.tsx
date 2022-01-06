@@ -1,217 +1,57 @@
 import { useEffect, useRef, useState } from 'react'
 import * as tf from '@tensorflow/tfjs'
-import Webcam from 'react-webcam'
 import FileUploadIcon from '@mui/icons-material/FileUpload'
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera'
-import Card from '@mui/material/Card'
-import CardActionArea from '@mui/material/CardActionArea'
-import CardMedia from '@mui/material/CardMedia'
 import Typography from '@mui/material/Typography'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import Button from '@mui/material/Button'
-import { DetectedObject, detect } from '../services/detection'
-import { draw } from '../services/drawing'
 import { Config } from '../services/config'
-import { Dialog } from '@mui/material'
+import ImageContainer from './ImageContainer'
+import WebcamContainer from './WebcamContainer'
 
 interface Props {
   model: tf.GraphModel
   modelConfig: Config
 }
 
-type Mode = 'image' | 'webcam' | 'empty'
+type Mode = 'empty' | 'webcam' | 'image'
 
 const ContentContainer = ({ model, modelConfig }: Props) => {
   const [mode, setMode] = useState<Mode>('empty')
-  const [loading, setLoading] = useState<boolean>(false)
+  const nextMode = useRef<Mode>('empty')
+
+  const [webcamShouldClose, setWebcamShouldClose] = useState<boolean>(false)
+  const [webcamCloseable, setWebcamCloseable] = useState<boolean>(false)
+
   const [fullscreen, setFullscreen] = useState<boolean>(false)
+  const [imageSource, setImageSource] = useState<string | null>(null)
 
-  const cardRef = useRef<HTMLDivElement>(null)
-  const webcamRef = useRef<Webcam>(null)
-  const imageRef = useRef<HTMLImageElement | null>(null)
-  const canvasRef = useRef<HTMLCanvasElement>(null)
-  const requestDraw = useRef<number>()
-  const requestDetect = useRef<number>()
-  const stop = useRef<boolean>(false)
+  // if (fullscreen) {
+  //   content = (
+  //     <Dialog
+  //       keepMounted
+  //       open={fullscreen}
+  //       onClose={toggleFullScreen}
+  //       fullScreen
+  //       style={{ width: '100%' }}
+  //     >
+  //       {content}
+  //     </Dialog>
+  //   )
+  // }
 
-  // start detecting for webcam
   useEffect(() => {
-    if (mode === 'webcam' && webcamRef?.current?.video) {
-      const { video } = webcamRef.current
-
-      const animateDraw = (objects: DetectedObject[]) => {
-        console.log('draw video')
-
-        if (canvasRef.current && cardRef.current) {
-          draw(objects, video, canvasRef.current, cardRef.current)
-          requestDraw.current = requestAnimationFrame(() =>
-            animateDraw(objects)
-          )
-        }
-      }
-
-      const animateDetect = () => {
-        if (!stop.current) {
-          detect(model, modelConfig, video, video.videoWidth, video.videoHeight)
-            .then((o) => {
-              cancelAnimationFrame(requestDraw?.current!)
-              return o
-            })
-            .then(animateDraw)
-            .then(() => {
-              requestDetect.current = requestAnimationFrame(animateDetect)
-            })
-        }
-      }
-
-      video.addEventListener(
-        'loadeddata',
-        () => {
-          stop.current = false
-          animateDetect()
-        },
-        { once: true }
-      )
+    if (webcamCloseable) {
+      setMode(nextMode.current)
+      setWebcamCloseable(false)
+      setWebcamShouldClose(false)
     }
-    return () => {
-      stop.current = true
-      cancelAnimationFrame(requestDraw?.current!)
-      cancelAnimationFrame(requestDetect?.current!)
-    }
-  }, [mode, model, modelConfig])
+  }, [webcamCloseable])
 
-  // start detecting for image
-  useEffect(() => {
-    if (mode === 'image' && imageRef?.current && !loading) {
-      const animateDraw = (objects: DetectedObject[]) => {
-        console.log('draw image')
-        if (canvasRef.current && cardRef.current) {
-          const source = imageRef.current
-          if (source) {
-            draw(objects, source, canvasRef.current, cardRef.current)
-            requestDraw.current = requestAnimationFrame(() =>
-              animateDraw(objects)
-            )
-          }
-        }
-      }
-
-      setTimeout(() => {
-        detect(
-          model,
-          modelConfig,
-          imageRef.current!,
-          imageRef.current!.naturalWidth,
-          imageRef.current!.naturalHeight
-        )
-          .then((o) => {
-            cancelAnimationFrame(requestDraw?.current!)
-            return o
-          })
-          .then(animateDraw)
-      }, 500)
-    }
-    return () => cancelAnimationFrame(requestDraw?.current!)
-  }, [mode, model, loading, modelConfig])
-
-  const onChangeImage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { files } = event.target
-    if (
-      files &&
-      files.length > 0 &&
-      /\.(jpe?g|png|gif)$/i.test(files[0].name) &&
-      !loading
-    ) {
-      setLoading(true)
-      const image = new Image()
-      image.src = URL.createObjectURL(files[0])
-      imageRef.current = image
-      image.addEventListener(
-        'load',
-        () => {
-          setMode('image')
-          setLoading(false)
-        },
-        { once: true }
-      )
-    }
-  }
-
-  const openCamera = () => {
-    if (mode !== 'webcam') {
-      setMode('webcam')
-    }
-  }
-
-  const toggleFullScreen = () => setFullscreen((prev) => !prev)
-
-  let content: JSX.Element
-  switch (mode) {
-    case 'image':
-      content = (
-        <Card ref={cardRef} style={{ width: 'fit-content', margin: 'auto' }}>
-          <CardActionArea onClick={toggleFullScreen}>
-            <canvas
-              ref={canvasRef}
-              style={{
-                position: 'absolute',
-                left: 0,
-                right: 0,
-                zIndex: 100,
-                width: '100%',
-                height: '100%',
-              }}
-            />
-            <CardMedia
-              style={{
-                width: '100%',
-                objectFit: 'contain',
-                maxHeight: fullscreen ? '100vh' : '83vh',
-              }}
-              component='img'
-              image={imageRef!.current!.src}
-              alt='detected image'
-            />
-          </CardActionArea>
-        </Card>
-      )
-      break
-    case 'webcam':
-      content = (
-        <Card ref={cardRef} style={{ width: 'fit-content', margin: 'auto' }}>
-          <CardActionArea onClick={toggleFullScreen}>
-            <canvas
-              ref={canvasRef}
-              style={{
-                position: 'absolute',
-                left: 0,
-                right: 0,
-                zIndex: 100,
-                width: '100%',
-                height: '100%',
-              }}
-            />
-            <Webcam
-              ref={webcamRef}
-              muted={true}
-              width='500'
-              style={{
-                width: '100%',
-                objectFit: 'contain',
-                display: 'block',
-                maxHeight: fullscreen ? '100vh' : '83vh',
-              }}
-              videoConstraints={{
-                facingMode: 'environment',
-              }}
-            />
-          </CardActionArea>
-        </Card>
-      )
-      break
-    default:
-      content = (
+  const content = () => {
+    if (mode === 'empty') {
+      return (
         <Typography
           variant='h5'
           align='center'
@@ -221,26 +61,58 @@ const ContentContainer = ({ model, modelConfig }: Props) => {
           Please upload your photo
         </Typography>
       )
+    }
+    if (mode === 'image') {
+      return (
+        <ImageContainer
+          onClickAction={() => {}}
+          model={model}
+          modelConfig={modelConfig}
+          imageSource={imageSource!}
+        />
+      )
+    }
+    if (mode === 'webcam') {
+      return (
+        <WebcamContainer
+          onClickAction={() => {}}
+          model={model}
+          modelConfig={modelConfig}
+          shouldClose={webcamShouldClose}
+          setCloseable={setWebcamCloseable}
+        />
+      )
+    }
+
+    throw new Error('Invalid state')
   }
 
-  if (fullscreen) {
-    content = (
-      <Dialog
-        keepMounted
-        open={fullscreen}
-        onClose={toggleFullScreen}
-        fullScreen
-        style={{ width: '100%' }}
-      >
-        {content}
-      </Dialog>
-    )
+  const handleChangeImage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { files } = event.target
+    if (
+      files &&
+      files.length > 0 &&
+      /\.(jpe?g|png|gif)$/i.test(files[0].name)
+    ) {
+      setImageSource(URL.createObjectURL(files[0]))
+      if (mode === 'webcam') {
+        nextMode.current = 'image'
+        setWebcamShouldClose(true)
+      } else {
+        setMode('image')
+      }
+    }
+  }
+
+  const handleOpenCamera = () => {
+    setImageSource(null)
+    setMode('webcam')
   }
 
   return (
     <main style={{ paddingTop: '1rem', paddingBottom: '1rem' }}>
       <Container style={{ paddingLeft: '1rem', paddingRight: '1rem' }}>
-        {content}
+        {content()}
         <Stack
           sx={{ pt: 4 }}
           direction='row'
@@ -252,7 +124,7 @@ const ContentContainer = ({ model, modelConfig }: Props) => {
             style={{ display: 'none' }}
             id='upload-image'
             type='file'
-            onChange={onChangeImage}
+            onChange={handleChangeImage}
           />
           <label htmlFor='upload-image'>
             <Button
@@ -266,7 +138,7 @@ const ContentContainer = ({ model, modelConfig }: Props) => {
           <Button
             variant='outlined'
             component='span'
-            onClick={openCamera}
+            onClick={handleOpenCamera}
             startIcon={<PhotoCameraIcon />}
           >
             Camera
