@@ -30,6 +30,7 @@ const WebcamContainer = (props: Props) => {
   const shouldCloseRef = useRef<boolean>(false)
 
   const [objects, setObjects] = useState<DetectedObject[]>([])
+  const [loading, setLoading] = useState<boolean>(true)
 
   useEffect(() => {
     shouldCloseRef.current = shouldClose
@@ -59,6 +60,7 @@ const WebcamContainer = (props: Props) => {
         'loadeddata',
         () => {
           animateDetect()
+          setLoading(false)
         },
         {
           once: true,
@@ -76,6 +78,7 @@ const WebcamContainer = (props: Props) => {
         style={{ width: '100%' }}
       >
         <DetectWebcam
+          loading={loading}
           objects={objects}
           webcamRef={webcamFullscreenRef}
           onClickAction={onClickAction}
@@ -83,6 +86,7 @@ const WebcamContainer = (props: Props) => {
         />
       </Dialog>
       <DetectWebcam
+        loading={loading}
         objects={objects}
         webcamRef={webcamRef}
         onClickAction={onClickAction}
