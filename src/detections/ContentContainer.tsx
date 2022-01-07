@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { GraphModel } from '@tensorflow/tfjs'
 import FileUploadIcon from '@mui/icons-material/FileUpload'
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera'
+import CloseIcon from '@mui/icons-material/Close'
 import Typography from '@mui/material/Typography'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
@@ -62,6 +63,15 @@ const ContentContainer = ({ model, modelConfig }: Props) => {
     setFullscreen((fs) => !fs)
   }
 
+  const handleCloseAll = () => {
+    if (mode === 'webcam') {
+      nextMode.current = 'empty'
+      setWebcamShouldClose(true)
+    } else {
+      setMode('empty')
+    }
+  }
+
   return (
     <main style={{ paddingTop: '1rem', paddingBottom: '1rem' }}>
       <Container style={{ paddingLeft: '1rem', paddingRight: '1rem' }}>
@@ -105,8 +115,10 @@ const ContentContainer = ({ model, modelConfig }: Props) => {
         })()}
         <Stack
           sx={{ pt: 4 }}
-          direction='row'
-          spacing={2}
+          display={'flex'}
+          direction={'row'}
+          flexWrap={'wrap'}
+          gap={2}
           justifyContent='center'
         >
           <input
@@ -118,6 +130,7 @@ const ContentContainer = ({ model, modelConfig }: Props) => {
           />
           <label htmlFor='upload-image'>
             <Button
+              style={{ width: '100%' }}
               variant='contained'
               component='span'
               startIcon={<FileUploadIcon />}
@@ -127,12 +140,21 @@ const ContentContainer = ({ model, modelConfig }: Props) => {
           </label>
           <Button
             variant='outlined'
-            component='span'
             onClick={handleOpenCamera}
             startIcon={<PhotoCameraIcon />}
           >
             Camera
           </Button>
+          {mode !== 'empty' && (
+            <Button
+              variant='outlined'
+              color='error'
+              onClick={handleCloseAll}
+              startIcon={<CloseIcon />}
+            >
+              Close
+            </Button>
+          )}
         </Stack>
       </Container>
     </main>
