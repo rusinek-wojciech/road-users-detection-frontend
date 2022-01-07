@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import * as tf from '@tensorflow/tfjs'
+import { GraphModel } from '@tensorflow/tfjs'
 import FileUploadIcon from '@mui/icons-material/FileUpload'
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera'
 import Typography from '@mui/material/Typography'
@@ -12,16 +12,11 @@ import WebcamContainer from './WebcamContainer'
 import { Dialog } from '@mui/material'
 
 interface Props {
-  model: tf.GraphModel
+  model: GraphModel
   modelConfig: Config
 }
 
-type Mode =
-  | 'empty'
-  | 'webcam'
-  | 'image'
-  | 'fullscreen-image'
-  | 'fullscreen-webcam'
+type Mode = 'empty' | 'webcam' | 'image'
 
 const ContentContainer = ({ model, modelConfig }: Props) => {
   const [mode, setMode] = useState<Mode>('empty')
@@ -31,6 +26,7 @@ const ContentContainer = ({ model, modelConfig }: Props) => {
   const [webcamCloseable, setWebcamCloseable] = useState<boolean>(false)
 
   const [imageSource, setImageSource] = useState<string | null>(null)
+  const [fullscreen, setFullscreen] = useState<boolean>(false)
 
   useEffect(() => {
     if (webcamCloseable) {
@@ -51,6 +47,7 @@ const ContentContainer = ({ model, modelConfig }: Props) => {
       if (mode === 'webcam') {
         nextMode.current = 'image'
         setWebcamShouldClose(true)
+        console.log('changing to iamge')
       } else {
         setMode('image')
       }
@@ -63,15 +60,13 @@ const ContentContainer = ({ model, modelConfig }: Props) => {
   }
 
   const toggleWebcamFullscreen = () => {
-    if (mode === 'fullscreen-webcam') {
-      nextMode.current = 'webcam'
-    } else if (mode === 'webcam') {
-      nextMode.current = 'fullscreen-webcam'
-    }
+    setFullscreen((fs) => !fs)
+    nextMode.current = 'webcam'
     setWebcamShouldClose(true)
   }
+
   const toggleImageFullscreen = () => {
-    setMode((m) => (m === 'image' ? 'fullscreen-image' : 'image'))
+    setFullscreen((fs) => !fs)
   }
 
   const content = () => {
@@ -94,41 +89,12 @@ const ContentContainer = ({ model, modelConfig }: Props) => {
           model={model}
           modelConfig={modelConfig}
           imageSource={imageSource!}
+          fullscreen={fullscreen}
         />
-      )
-    }
-    if (mode === 'fullscreen-image') {
-      return (
-        <Dialog
-          keepMounted
-          open={true}
-          onClose={toggleImageFullscreen}
-          fullScreen
-          style={{ width: '100%' }}
-        >
-          <ImageContainer
-            onClickAction={toggleImageFullscreen}
-            model={model}
-            modelConfig={modelConfig}
-            imageSource={imageSource!}
-            fullscreen
-          />
-        </Dialog>
       )
     }
     if (mode === 'webcam') {
-      return (
-        <WebcamContainer
-          onClickAction={toggleWebcamFullscreen}
-          model={model}
-          modelConfig={modelConfig}
-          shouldClose={webcamShouldClose}
-          setCloseable={setWebcamCloseable}
-        />
-      )
-    }
-    if (mode === 'fullscreen-webcam') {
-      return (
+      return fullscreen ? (
         <Dialog
           keepMounted
           open={true}
@@ -145,6 +111,14 @@ const ContentContainer = ({ model, modelConfig }: Props) => {
             fullscreen
           />
         </Dialog>
+      ) : (
+        <WebcamContainer
+          onClickAction={toggleWebcamFullscreen}
+          model={model}
+          modelConfig={modelConfig}
+          shouldClose={webcamShouldClose}
+          setCloseable={setWebcamCloseable}
+        />
       )
     }
     throw new Error('Invalid state')
