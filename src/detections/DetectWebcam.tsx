@@ -3,16 +3,28 @@ import { Card, CardActionArea } from '@mui/material'
 import { DetectedObject } from '../services/detection'
 import { draw } from '../services/drawing'
 import Webcam from 'react-webcam'
+import Spinner from '../components/Spinner'
 
 interface Props {
+  loading: boolean
   objects: DetectedObject[]
   webcamRef: RefObject<Webcam>
   onClickAction: () => void
   fullscreen?: boolean
 }
 
+const videoConstraints: MediaTrackConstraints = {
+  facingMode: 'environment',
+}
+
 const DetectWebcam = (props: Props) => {
-  const { objects, webcamRef, onClickAction, fullscreen = false } = props
+  const {
+    loading,
+    objects,
+    webcamRef,
+    onClickAction,
+    fullscreen = false,
+  } = props
 
   const cardRef = useRef<HTMLDivElement | null>(null)
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
@@ -52,11 +64,13 @@ const DetectWebcam = (props: Props) => {
     <Card
       ref={cardRef}
       style={{
+        position: 'relative',
         width: 'fit-content',
         marginLeft: 'auto',
         marginRight: 'auto',
       }}
     >
+      {loading && <Spinner />}
       <CardActionArea onClick={onClickAction}>
         <canvas
           ref={canvasRef}
@@ -67,6 +81,9 @@ const DetectWebcam = (props: Props) => {
             zIndex: 100,
             width: '100%',
             height: '100%',
+            backgroundColor: loading
+              ? 'rgba(0, 0, 0, 0.5)'
+              : 'rgba(0, 0, 0, 0)',
           }}
         />
         <Webcam
@@ -78,9 +95,7 @@ const DetectWebcam = (props: Props) => {
             display: 'block',
             maxHeight: fullscreen ? '100vh' : '83vh',
           }}
-          videoConstraints={{
-            facingMode: 'environment',
-          }}
+          videoConstraints={videoConstraints}
         />
       </CardActionArea>
     </Card>

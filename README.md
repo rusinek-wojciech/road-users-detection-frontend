@@ -7,7 +7,3 @@ Tensorflow.js model in react app
 Move model to public/tensorflow/
 
 Add configuration in config.ts and change default config in state.ts
-
-## Bugs to fix
-
-fast image change creates an error

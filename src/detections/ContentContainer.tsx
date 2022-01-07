@@ -50,6 +50,7 @@ const ContentContainer = ({ model, modelConfig }: Props) => {
         setMode('image')
       }
     }
+    event.target.value = ''
   }
 
   const handleOpenCamera = () => {
@@ -61,49 +62,47 @@ const ContentContainer = ({ model, modelConfig }: Props) => {
     setFullscreen((fs) => !fs)
   }
 
-  const content = () => {
-    if (mode === 'empty') {
-      return (
-        <Typography
-          variant='h5'
-          align='center'
-          color='text.secondary'
-          paragraph
-        >
-          Please upload your photo
-        </Typography>
-      )
-    }
-    if (mode === 'image') {
-      return (
-        <ImageContainer
-          onClickAction={toggleFullscreen}
-          model={model}
-          modelConfig={modelConfig}
-          imageSource={imageSource!}
-          fullscreen={fullscreen}
-        />
-      )
-    }
-    if (mode === 'webcam') {
-      return (
-        <WebcamContainer
-          onClickAction={toggleFullscreen}
-          model={model}
-          modelConfig={modelConfig}
-          shouldClose={webcamShouldClose}
-          setCloseable={setWebcamCloseable}
-          fullscreen={fullscreen}
-        />
-      )
-    }
-    throw new Error('Invalid state')
-  }
-
   return (
     <main style={{ paddingTop: '1rem', paddingBottom: '1rem' }}>
       <Container style={{ paddingLeft: '1rem', paddingRight: '1rem' }}>
-        {content()}
+        {(() => {
+          if (mode === 'empty') {
+            return (
+              <Typography
+                variant='h5'
+                align='center'
+                color='text.secondary'
+                paragraph
+              >
+                Please upload your photo
+              </Typography>
+            )
+          }
+          if (mode === 'image') {
+            return (
+              <ImageContainer
+                onClickAction={toggleFullscreen}
+                model={model}
+                modelConfig={modelConfig}
+                imageSource={imageSource!}
+                fullscreen={fullscreen}
+              />
+            )
+          }
+          if (mode === 'webcam') {
+            return (
+              <WebcamContainer
+                onClickAction={toggleFullscreen}
+                model={model}
+                modelConfig={modelConfig}
+                shouldClose={webcamShouldClose}
+                setCloseable={setWebcamCloseable}
+                fullscreen={fullscreen}
+              />
+            )
+          }
+          return null
+        })()}
         <Stack
           sx={{ pt: 4 }}
           direction='row'

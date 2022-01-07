@@ -2,8 +2,10 @@ import { useEffect, useRef, memo } from 'react'
 import { Card, CardActionArea, CardMedia } from '@mui/material'
 import { DetectedObject } from '../services/detection'
 import { draw } from '../services/drawing'
+import Spinner from '../components/Spinner'
 
 interface Props {
+  loading: boolean
   objects: DetectedObject[]
   imageSource: string
   width: number
@@ -14,6 +16,7 @@ interface Props {
 
 const DetectImage = (props: Props) => {
   const {
+    loading,
     objects,
     imageSource,
     width,
@@ -60,12 +63,14 @@ const DetectImage = (props: Props) => {
     <Card
       ref={cardRef}
       style={{
+        position: 'relative',
         width: 'fit-content',
         marginLeft: 'auto',
         marginRight: 'auto',
       }}
     >
-      <CardActionArea onClick={onClickAction}>
+      {loading && <Spinner />}
+      <CardActionArea onClick={onClickAction} style={{}}>
         <canvas
           ref={canvasRef}
           style={{
@@ -75,6 +80,9 @@ const DetectImage = (props: Props) => {
             zIndex: 100,
             width: '100%',
             height: '100%',
+            backgroundColor: loading
+              ? 'rgba(0, 0, 0, 0.5)'
+              : 'rgba(0, 0, 0, 0)',
           }}
         />
         <CardMedia

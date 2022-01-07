@@ -24,8 +24,10 @@ const ImageContainer = (props: Props) => {
 
   const [objects, setObjects] = useState<DetectedObject[]>([])
   const [[width, height], setImageSize] = useState<[number, number]>([0, 0])
+  const [loading, setLoading] = useState<boolean>(false)
 
   useLayoutEffect(() => {
+    setLoading(true)
     setObjects([])
     const img = new Image()
     img.src = imageSource
@@ -41,6 +43,7 @@ const ImageContainer = (props: Props) => {
         )
         setImageSize([img.naturalWidth, img.naturalHeight])
         setObjects(objects)
+        setLoading(false)
       },
       { once: true }
     )
@@ -55,6 +58,7 @@ const ImageContainer = (props: Props) => {
         style={{ width: '100%' }}
       >
         <DetectImage
+          loading={loading}
           objects={objects}
           imageSource={imageSource}
           width={width}
@@ -64,6 +68,7 @@ const ImageContainer = (props: Props) => {
         />
       </Dialog>
       <DetectImage
+        loading={loading}
         objects={objects}
         imageSource={imageSource}
         width={width}
