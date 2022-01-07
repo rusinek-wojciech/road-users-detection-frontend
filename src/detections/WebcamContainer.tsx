@@ -1,10 +1,10 @@
-import { useEffect, useRef } from 'react'
-import { Card, CardActionArea } from '@mui/material'
+import { memo, useEffect, useRef, useState } from 'react'
+import { Dialog } from '@mui/material'
 import { GraphModel } from '@tensorflow/tfjs'
-import Webcam from 'react-webcam'
 import { DetectedObject, detect } from '../services/detection'
-import { draw } from '../services/drawing'
 import { Config } from '../services/config'
+import DetectWebcam from './DetectWebcam'
+import Webcam from 'react-webcam'
 
 interface Props {
   onClickAction: () => void
@@ -25,52 +25,34 @@ const WebcamContainer = (props: Props) => {
     fullscreen = false,
   } = props
 
-  const cardRef = useRef<HTMLDivElement>(null)
-  const webcamRef = useRef<Webcam>(null)
-  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const webcamRef = useRef<Webcam | null>(null)
+  const webcamFullscreenRef = useRef<Webcam | null>(null)
   const shouldCloseRef = useRef<boolean>(false)
-  const frameRequest = useRef<number>(0)
+
+  const [objects, setObjects] = useState<DetectedObject[]>([])
 
   useEffect(() => {
     shouldCloseRef.current = shouldClose
   }, [shouldClose])
 
   useEffect(() => {
-    const canvas = canvasRef.current
-    const card = cardRef.current
-
-    if (webcamRef?.current?.video && canvas && card && !shouldClose) {
+    if (webcamRef?.current?.video) {
       const { video } = webcamRef.current
 
-      const animateDraw = (objects: DetectedObject[]) => {
-        draw(
-          objects,
-          canvas,
-          card.clientWidth,
-          card.clientHeight,
+      const animateDetect = async () => {
+        const objects = await detect(
+          model,
+          modelConfig,
+          video,
           video.videoWidth,
           video.videoHeight
         )
-        frameRequest.current = requestAnimationFrame(() => animateDraw(objects))
-      }
-
-      const animateDetect = () => {
-        setTimeout(async () => {
-          const objects = await detect(
-            model,
-            modelConfig,
-            video,
-            video.videoWidth,
-            video.videoHeight
-          )
-          cancelAnimationFrame(frameRequest.current)
-          if (shouldCloseRef.current) {
-            setCloseable(true)
-          } else {
-            animateDraw(objects)
-            animateDetect()
-          }
-        })
+        if (shouldCloseRef.current) {
+          setCloseable(true)
+        } else {
+          setObjects(objects)
+          requestAnimationFrame(animateDetect)
+        }
       }
 
       video.addEventListener(
@@ -83,49 +65,30 @@ const WebcamContainer = (props: Props) => {
         }
       )
     }
-
-    return () => {
-      cancelAnimationFrame(frameRequest.current)
-      if (canvas) {
-        const ctx = canvas.getContext('2d')
-        if (ctx) {
-          ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
-        }
-      }
-    }
-  }, [model, modelConfig, setCloseable, shouldClose])
+  }, [model, modelConfig, setCloseable])
 
   return (
-    <Card ref={cardRef} style={{ width: 'fit-content', margin: 'auto' }}>
-      <CardActionArea onClick={onClickAction}>
-        <canvas
-          ref={canvasRef}
-          style={{
-            position: 'absolute',
-            left: 0,
-            right: 0,
-            zIndex: 100,
-            width: '100%',
-            height: '100%',
-          }}
+    <>
+      <Dialog
+        open={fullscreen}
+        onClose={onClickAction}
+        fullScreen
+        style={{ width: '100%' }}
+      >
+        <DetectWebcam
+          objects={objects}
+          webcamRef={webcamFullscreenRef}
+          onClickAction={onClickAction}
+          fullscreen
         />
-        <Webcam
-          ref={webcamRef}
-          muted={true}
-          width='500'
-          style={{
-            width: '100%',
-            objectFit: 'contain',
-            display: 'block',
-            maxHeight: fullscreen ? '100vh' : '83vh',
-          }}
-          videoConstraints={{
-            facingMode: 'environment',
-          }}
-        />
-      </CardActionArea>
-    </Card>
+      </Dialog>
+      <DetectWebcam
+        objects={objects}
+        webcamRef={webcamRef}
+        onClickAction={onClickAction}
+      />
+    </>
   )
 }
 
-export default WebcamContainer
+export default memo(WebcamContainer)

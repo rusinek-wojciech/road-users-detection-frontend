@@ -9,7 +9,6 @@ import Button from '@mui/material/Button'
 import { Config } from '../services/config'
 import ImageContainer from './ImageContainer'
 import WebcamContainer from './WebcamContainer'
-import { Dialog } from '@mui/material'
 
 interface Props {
   model: GraphModel
@@ -47,7 +46,6 @@ const ContentContainer = ({ model, modelConfig }: Props) => {
       if (mode === 'webcam') {
         nextMode.current = 'image'
         setWebcamShouldClose(true)
-        console.log('changing to iamge')
       } else {
         setMode('image')
       }
@@ -59,13 +57,7 @@ const ContentContainer = ({ model, modelConfig }: Props) => {
     setMode('webcam')
   }
 
-  const toggleWebcamFullscreen = () => {
-    setFullscreen((fs) => !fs)
-    nextMode.current = 'webcam'
-    setWebcamShouldClose(true)
-  }
-
-  const toggleImageFullscreen = () => {
+  const toggleFullscreen = () => {
     setFullscreen((fs) => !fs)
   }
 
@@ -85,7 +77,7 @@ const ContentContainer = ({ model, modelConfig }: Props) => {
     if (mode === 'image') {
       return (
         <ImageContainer
-          onClickAction={toggleImageFullscreen}
+          onClickAction={toggleFullscreen}
           model={model}
           modelConfig={modelConfig}
           imageSource={imageSource!}
@@ -94,30 +86,14 @@ const ContentContainer = ({ model, modelConfig }: Props) => {
       )
     }
     if (mode === 'webcam') {
-      return fullscreen ? (
-        <Dialog
-          keepMounted
-          open={true}
-          onClose={toggleWebcamFullscreen}
-          fullScreen
-          style={{ width: '100%' }}
-        >
-          <WebcamContainer
-            onClickAction={toggleWebcamFullscreen}
-            model={model}
-            modelConfig={modelConfig}
-            shouldClose={webcamShouldClose}
-            setCloseable={setWebcamCloseable}
-            fullscreen
-          />
-        </Dialog>
-      ) : (
+      return (
         <WebcamContainer
-          onClickAction={toggleWebcamFullscreen}
+          onClickAction={toggleFullscreen}
           model={model}
           modelConfig={modelConfig}
           shouldClose={webcamShouldClose}
           setCloseable={setWebcamCloseable}
+          fullscreen={fullscreen}
         />
       )
     }

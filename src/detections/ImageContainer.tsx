@@ -1,4 +1,4 @@
-import { useLayoutEffect, useState } from 'react'
+import { memo, useLayoutEffect, useState } from 'react'
 import { Dialog } from '@mui/material'
 import { GraphModel } from '@tensorflow/tfjs'
 import { DetectedObject, detect } from '../services/detection'
@@ -49,7 +49,6 @@ const ImageContainer = (props: Props) => {
   return (
     <>
       <Dialog
-        keepMounted
         open={fullscreen}
         onClose={onClickAction}
         fullScreen
@@ -75,5 +74,4 @@ const ImageContainer = (props: Props) => {
   )
 }
 
-// export default memo(ImageContainer)
-export default ImageContainer
+export default memo(ImageContainer)

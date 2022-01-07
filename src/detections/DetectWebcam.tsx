@@ -1,26 +1,18 @@
-import { useEffect, useRef, memo } from 'react'
-import { Card, CardActionArea, CardMedia } from '@mui/material'
+import { RefObject, useEffect, useRef, memo } from 'react'
+import { Card, CardActionArea } from '@mui/material'
 import { DetectedObject } from '../services/detection'
 import { draw } from '../services/drawing'
+import Webcam from 'react-webcam'
 
 interface Props {
   objects: DetectedObject[]
-  imageSource: string
-  width: number
-  height: number
+  webcamRef: RefObject<Webcam>
   onClickAction: () => void
   fullscreen?: boolean
 }
 
-const DetectImage = (props: Props) => {
-  const {
-    objects,
-    imageSource,
-    width,
-    height,
-    onClickAction,
-    fullscreen = false,
-  } = props
+const DetectWebcam = (props: Props) => {
+  const { objects, webcamRef, onClickAction, fullscreen = false } = props
 
   const cardRef = useRef<HTMLDivElement | null>(null)
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
@@ -30,20 +22,20 @@ const DetectImage = (props: Props) => {
     const canvas = canvasRef.current
     const card = cardRef.current
 
-    if (canvas && card) {
-      const animateDraw = () => {
+    const animateDraw = () => {
+      if (webcamRef.current?.video && canvas && card) {
         draw(
           objects,
           canvas,
           card.clientWidth,
           card.clientHeight,
-          width,
-          height
+          webcamRef.current.video.videoWidth,
+          webcamRef.current.video.videoHeight
         )
         frameRequest.current = requestAnimationFrame(animateDraw)
       }
-      animateDraw()
     }
+    animateDraw()
 
     return () => {
       cancelAnimationFrame(frameRequest.current)
@@ -54,7 +46,7 @@ const DetectImage = (props: Props) => {
         }
       }
     }
-  }, [objects, width, height])
+  }, [objects, webcamRef])
 
   return (
     <Card
@@ -77,19 +69,22 @@ const DetectImage = (props: Props) => {
             height: '100%',
           }}
         />
-        <CardMedia
+        <Webcam
+          ref={webcamRef}
+          muted={true}
           style={{
             width: '100%',
             objectFit: 'contain',
+            display: 'block',
             maxHeight: fullscreen ? '100vh' : '83vh',
           }}
-          component='img'
-          image={imageSource}
-          alt='detected image'
+          videoConstraints={{
+            facingMode: 'environment',
+          }}
         />
       </CardActionArea>
     </Card>
   )
 }
 
-export default memo(DetectImage)
+export default memo(DetectWebcam)
