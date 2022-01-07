@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { createTheme, CssBaseline, ThemeProvider } from '@mui/material'
 import BackdropSpinner from './components/BackdropSpinner'
-import ContentContainer from './containers/ContentContainer'
+import ContentContainer from './detections/ContentContainer'
 import Navbar from './components/Navbar'
 import Sidebar from './components/Sidebar'
 import { getDesignTokens } from './services/theme'
