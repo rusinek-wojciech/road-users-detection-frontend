@@ -11,6 +11,7 @@ const useModel = () => {
 
   useEffect(() => {
     if (!model) {
+      tf.enableProdMode()
       tf.setBackend('webgl')
       tf.ready()
         .then(() => tf.loadGraphModel(modelConfig.path))
