@@ -139,7 +139,8 @@ const ContentContainer = ({ model, modelConfig }: Props) => {
             </Button>
           </label>
           <Button
-            variant='outlined'
+            variant='contained'
+            color='info'
             onClick={handleOpenCamera}
             startIcon={<PhotoCameraIcon />}
           >
@@ -147,7 +148,7 @@ const ContentContainer = ({ model, modelConfig }: Props) => {
           </Button>
           {mode !== 'empty' && (
             <Button
-              variant='outlined'
+              variant='contained'
               color='error'
               onClick={handleCloseAll}
               startIcon={<CloseIcon />}
