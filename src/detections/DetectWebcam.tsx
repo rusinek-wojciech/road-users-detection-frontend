@@ -15,12 +15,8 @@ interface Props {
 
 const videoConstraints: MediaTrackConstraints = {
   facingMode: 'environment',
-}
-
-const fullScreenVideoConstraints: MediaTrackConstraints = {
-  facingMode: 'environment',
-  width: { ideal: window.screen.width },
-  height: { ideal: window.screen.height },
+  width: { ideal: 1980 },
+  height: { ideal: 1980 },
 }
 
 const DetectWebcam = (props: Props) => {
@@ -101,9 +97,7 @@ const DetectWebcam = (props: Props) => {
             display: 'block',
             maxHeight: fullscreen ? '100vh' : '83vh',
           }}
-          videoConstraints={
-            fullscreen ? fullScreenVideoConstraints : videoConstraints
-          }
+          videoConstraints={videoConstraints}
         />
       </CardActionArea>
     </Card>
