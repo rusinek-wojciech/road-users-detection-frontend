@@ -15,8 +15,8 @@ interface Props {
 
 const videoConstraints: MediaTrackConstraints = {
   facingMode: 'environment',
-  width: { ideal: 1980 },
-  height: { ideal: 1980 },
+  width: { ideal: 640 },
+  height: { ideal: 640 },
 }
 
 const DetectWebcam = (props: Props) => {
