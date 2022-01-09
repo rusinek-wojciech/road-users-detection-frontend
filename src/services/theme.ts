@@ -1,6 +1,8 @@
 import { PaletteMode } from '@mui/material'
 import { grey } from '@mui/material/colors'
 
+const PALETTE_MODE_KEY = 'PALETTE_MODE'
+
 export const getDesignTokens = (mode: PaletteMode) => ({
   palette: {
     type: mode,
@@ -29,3 +31,12 @@ export const getDesignTokens = (mode: PaletteMode) => ({
     },
   },
 })
+
+export const getPaletteMode = (): PaletteMode => {
+  const mode = localStorage.getItem(PALETTE_MODE_KEY)
+  return mode === 'dark' ? 'dark' : 'light'
+}
+
+export const setPaletteMode = (mode: PaletteMode): void => {
+  localStorage.setItem(PALETTE_MODE_KEY, mode)
+}
