@@ -16,31 +16,29 @@ export interface Config {
   path: string
 }
 
-const getModelPath = (model: string): string => {
-  return `tensorflow/${model}/model.json`
-}
+const getModelPath = (model: string): string => `tensorflow/${model}/model.json`
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const ssdMobilenet = (): Config => ({
   labels: [
     {
-      name: 'bike',
+      name: 'rowerzysta',
       color: '#D10000',
     },
     {
-      name: 'scooter',
+      name: 'hulajnoga elektryczna',
       color: '#FFC400',
     },
     {
-      name: 'rolls',
+      name: 'rolki',
       color: '#6495ED',
     },
     {
-      name: 'pedestrian',
+      name: 'pieszy',
       color: '#7FFF00',
     },
     {
-      name: 'uto',
+      name: 'UTO',
       color: '#008B8B',
     },
   ],
