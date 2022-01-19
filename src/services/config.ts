@@ -46,9 +46,9 @@ export const ssdMobilenet = (): Config => ({
   modelHeight: 640,
   treshold: 0.55,
   index: {
-    boxes: 6,
-    classes: 5,
-    scores: 7,
+    boxes: 2,
+    classes: 3,
+    scores: 4,
   },
   path: getModelPath('ssd_mobilenet'),
 })
