@@ -39,7 +39,7 @@ export const ssdMobilenet = (): Config => ({
       color: '#008B8B',
     },
   ],
-  treshold: 0.55,
+  treshold: 0.5,
   index: {
     boxes: 2,
     classes: 3,
