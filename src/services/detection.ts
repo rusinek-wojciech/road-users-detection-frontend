@@ -27,16 +27,15 @@ export const detect = async (
   tf.engine().startScope()
   const { boxes, classes, scores } = config.index
   try {
-    const tensorImage = await getTensorImage(
-      source,
-      config.modelWidth,
-      config.modelHeight
-    )
+    const tensorImage = await getTensorImage(source)
     const predictions: any = await model.executeAsync(tensorImage)
+    const boxesArray = predictions[boxes].arraySync()[0]
+    const classesArray = predictions[classes].arraySync()[0]
+    const scoresArray = predictions[scores].arraySync()[0]
     return detectObjects(
-      predictions[boxes].arraySync()[0],
-      predictions[classes].arraySync()[0],
-      predictions[scores].arraySync()[0],
+      boxesArray,
+      classesArray,
+      scoresArray,
       config.labels,
       config.treshold,
       width,
@@ -80,13 +79,8 @@ const detectObjects = (
 }
 
 const getTensorImage = async (
-  source: HTMLImageElement | HTMLVideoElement,
-  width: number,
-  height: number
+  source: HTMLImageElement | HTMLVideoElement
 ): Promise<tf.Tensor<tf.Rank>> => {
-  return tf.image
-    .resizeBilinear(await tf.browser.fromPixelsAsync(source), [width, height])
-    .toInt()
-    .transpose([0, 1, 2])
-    .expandDims()
+  const img = await tf.browser.fromPixelsAsync(source)
+  return img.toInt().transpose([0, 1, 2]).expandDims()
 }

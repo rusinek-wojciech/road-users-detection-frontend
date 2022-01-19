@@ -4,9 +4,6 @@ export interface Config {
     color: string
   }[]
   treshold: number
-  // // model pretrained sizes
-  modelWidth: number
-  modelHeight: number
   // objects indecies
   index: {
     boxes: number // [1,2,3,4]
@@ -42,8 +39,6 @@ export const ssdMobilenet = (): Config => ({
       color: '#008B8B',
     },
   ],
-  modelWidth: 640,
-  modelHeight: 640,
   treshold: 0.55,
   index: {
     boxes: 2,
