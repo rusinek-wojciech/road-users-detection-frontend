@@ -14,6 +14,7 @@ import {
   setModel,
 } from './store/actions'
 import { warmUp } from './services/detection'
+import { WARMUP_TIME } from './services/config'
 
 const App = () => {
   const { sidebarEnabled, paletteMode, model, modelConfig } = useAppState()
@@ -26,8 +27,6 @@ const App = () => {
 
   useEffect(() => {
     if (!model) {
-      tf.enableProdMode()
-      tf.setBackend('webgl')
       tf.ready()
         .then(() => tf.loadGraphModel(modelConfig.path))
         .then((m) => {
@@ -35,13 +34,13 @@ const App = () => {
           warmUp(m)
         })
         .catch(() => console.error('Failed to fetch model'))
-        .finally(() => setTimeout(() => setLoading(false), 3000))
+        .finally(() => setTimeout(() => setLoading(false), WARMUP_TIME))
     }
   }, [dispatch, model, modelConfig])
 
-  const onTogglePaletteMode = () => dispatch(togglePaletteMode())
-  const onCloseSidebar = () => dispatch(closeSidebar())
-  const onToggleSidebar = () => dispatch(toggleSidebar())
+  const handleTogglePaletteMode = () => dispatch(togglePaletteMode())
+  const handleCloseSidebar = () => dispatch(closeSidebar())
+  const handleToggleSidebar = () => dispatch(toggleSidebar())
 
   return (
     <ThemeProvider theme={theme}>
@@ -49,15 +48,15 @@ const App = () => {
       <CssBaseline />
       <Navbar
         paletteMode={paletteMode}
-        onToggleSidebar={onToggleSidebar}
-        onTogglePaletteMode={onTogglePaletteMode}
+        onToggleSidebar={handleToggleSidebar}
+        onTogglePaletteMode={handleTogglePaletteMode}
       />
       <Sidebar
         sidebarEnabled={sidebarEnabled}
-        onCloseSidebar={onCloseSidebar}
-        onToggleSidebar={onToggleSidebar}
+        onCloseSidebar={handleCloseSidebar}
+        onToggleSidebar={handleToggleSidebar}
         paletteMode={paletteMode}
-        onTogglePaletteMode={onTogglePaletteMode}
+        onTogglePaletteMode={handleTogglePaletteMode}
         labels={modelConfig.labels}
       />
       {model && <ContentContainer model={model} modelConfig={modelConfig} />}

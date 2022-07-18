@@ -47,3 +47,5 @@ export const ssdMobilenet = (): Config => ({
   },
   path: getModelPath('ssd_mobilenet'),
 })
+
+export const WARMUP_TIME = 3000

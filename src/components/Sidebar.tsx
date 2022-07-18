@@ -10,28 +10,31 @@ import DarkModeIcon from '@mui/icons-material/DarkMode'
 import FormatColorFillIcon from '@mui/icons-material/FormatColorFill'
 import { Avatar, ListItemAvatar, PaletteMode } from '@mui/material'
 
+const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1)
+
+interface Label {
+  name: string
+  color: string
+}
+
 interface Props {
   sidebarEnabled: boolean
+  labels: Label[]
+  paletteMode: PaletteMode
   onCloseSidebar: () => void
   onToggleSidebar: () => void
-  paletteMode: PaletteMode
   onTogglePaletteMode: () => void
-  labels: {
-    name: string
-    color: string
-  }[]
 }
 
 const Sidebar = ({
   sidebarEnabled,
+  labels,
+  paletteMode,
   onCloseSidebar,
   onToggleSidebar,
-  paletteMode,
   onTogglePaletteMode,
-  labels,
 }: Props) => {
-  const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1)
-
+  const isDarkMode = paletteMode === 'dark'
   return (
     <div>
       <Drawer anchor={'left'} open={sidebarEnabled} onClose={onCloseSidebar}>
@@ -45,14 +48,10 @@ const Sidebar = ({
             <ListItem button onClick={onTogglePaletteMode}>
               <ListItemAvatar>
                 <Avatar>
-                  {paletteMode === 'dark' ? (
-                    <LightModeIcon />
-                  ) : (
-                    <DarkModeIcon />
-                  )}
+                  {isDarkMode ? <LightModeIcon /> : <DarkModeIcon />}
                 </Avatar>
               </ListItemAvatar>
-              {paletteMode === 'dark' ? (
+              {isDarkMode ? (
                 <ListItemText
                   primary='Light Mode'
                   secondary='Change to light mode'
@@ -67,8 +66,8 @@ const Sidebar = ({
           </List>
           <Divider />
           <List subheader={<ListSubheader>Labels</ListSubheader>}>
-            {labels.map((label, index) => (
-              <ListItem button key={index}>
+            {labels.map((label) => (
+              <ListItem button key={label.name}>
                 <ListItemAvatar>
                   <Avatar style={{ backgroundColor: label.color }}>
                     <FormatColorFillIcon />

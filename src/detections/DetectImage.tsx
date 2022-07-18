@@ -27,35 +27,24 @@ const DetectImage = (props: Props) => {
 
   const cardRef = useRef<HTMLDivElement | null>(null)
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
-  const frameRequest = useRef<number>(0)
 
   useEffect(() => {
-    const canvas = canvasRef.current
-    const card = cardRef.current
+    let frameRequest = 0
+    const canvas = canvasRef.current!
+    const card = cardRef.current!
 
-    if (canvas && card) {
-      const animateDraw = () => {
-        draw(
-          objects,
-          canvas,
-          card.clientWidth,
-          card.clientHeight,
-          width,
-          height
-        )
-        frameRequest.current = requestAnimationFrame(animateDraw)
-      }
-      animateDraw()
+    const animateDraw = () => {
+      const { clientWidth, clientHeight } = card
+      draw(objects, canvas, clientWidth, clientHeight, width, height)
+      frameRequest = requestAnimationFrame(animateDraw)
     }
 
+    animateDraw()
+
     return () => {
-      cancelAnimationFrame(frameRequest.current)
-      if (canvas) {
-        const ctx = canvas.getContext('2d')
-        if (ctx) {
-          ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
-        }
-      }
+      cancelAnimationFrame(frameRequest)
+      const ctx = canvas.getContext('2d')!
+      ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
     }
   }, [objects, width, height])
 
@@ -70,7 +59,7 @@ const DetectImage = (props: Props) => {
       }}
     >
       {loading && <Spinner />}
-      <CardActionArea onClick={onClickAction} style={{}}>
+      <CardActionArea onClick={onClickAction}>
         <canvas
           ref={canvasRef}
           style={{

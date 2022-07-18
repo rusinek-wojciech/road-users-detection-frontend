@@ -1,7 +1,7 @@
-import { memo, useLayoutEffect, useState } from 'react'
+import { memo, useEffect, useState } from 'react'
 import { Dialog } from '@mui/material'
 import { GraphModel } from '@tensorflow/tfjs'
-import { DetectedObject, detect } from '../services/detection'
+import { DetectedObject, detectImage } from '../services/detection'
 import { Config } from '../services/config'
 import DetectImage from './DetectImage'
 
@@ -24,29 +24,27 @@ const ImageContainer = (props: Props) => {
 
   const [objects, setObjects] = useState<DetectedObject[]>([])
   const [[width, height], setImageSize] = useState<[number, number]>([0, 0])
-  const [loading, setLoading] = useState<boolean>(false)
+  const [loading, setLoading] = useState<boolean>(true)
 
-  useLayoutEffect(() => {
-    setLoading(true)
-    setObjects([])
+  useEffect(() => {
+    let mounted = true
     const img = new Image()
     img.src = imageSource
-    img.addEventListener(
-      'load',
-      async () => {
-        const objects = await detect(
-          model,
-          modelConfig,
-          img,
-          img.naturalWidth,
-          img.naturalHeight
-        )
-        setImageSize([img.naturalWidth, img.naturalHeight])
+
+    const detectOnImage = async () => {
+      const objects = await detectImage(model, modelConfig, img)
+      if (mounted) {
         setObjects(objects)
+        setImageSize([img.naturalWidth, img.naturalHeight])
         setLoading(false)
-      },
-      { once: true }
-    )
+      }
+    }
+
+    img.addEventListener('load', detectOnImage, { once: true })
+
+    return () => {
+      mounted = false
+    }
   }, [imageSource, model, modelConfig])
 
   return (
