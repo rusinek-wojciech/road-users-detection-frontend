@@ -19,6 +19,7 @@ const Navbar = ({
   onTogglePaletteMode,
   onToggleSidebar,
 }: Props) => {
+  const isDarkMode = paletteMode === 'dark'
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position='static'>
@@ -48,7 +49,7 @@ const Navbar = ({
             color='inherit'
             onClick={onTogglePaletteMode}
           >
-            {paletteMode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}
+            {isDarkMode ? <LightModeIcon /> : <DarkModeIcon />}
           </IconButton>
         </Toolbar>
       </AppBar>

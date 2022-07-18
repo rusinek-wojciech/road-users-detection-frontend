@@ -3,6 +3,9 @@ import { StrictMode } from 'react'
 import App from './App'
 import { AppContextProvider } from './store/Context'
 import * as serviceWorkerRegistration from './serviceWorkerRegistration'
+import { initialize } from './init'
+
+initialize()
 
 ReactDOM.render(
   <StrictMode>

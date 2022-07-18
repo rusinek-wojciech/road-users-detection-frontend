@@ -17,6 +17,28 @@ export const warmUp = (model: tf.GraphModel): void => {
     .finally(() => tf.engine().endScope())
 }
 
+export const detectImage = (
+  model: tf.GraphModel,
+  config: Config,
+  source: HTMLImageElement
+): Promise<DetectedObject[]> => {
+  return detect(
+    model,
+    config,
+    source,
+    source.naturalWidth,
+    source.naturalHeight
+  )
+}
+
+export const detectVideo = (
+  model: tf.GraphModel,
+  config: Config,
+  source: HTMLVideoElement
+): Promise<DetectedObject[]> => {
+  return detect(model, config, source, source.videoWidth, source.videoHeight)
+}
+
 export const detect = async (
   model: tf.GraphModel,
   config: Config,
@@ -24,8 +46,9 @@ export const detect = async (
   width: number,
   height: number
 ): Promise<DetectedObject[]> => {
-  tf.engine().startScope()
   const { boxes, classes, scores } = config.index
+
+  tf.engine().startScope()
   try {
     const tensorImage = await getTensorImage(source)
     const predictions: any = await model.executeAsync(tensorImage)

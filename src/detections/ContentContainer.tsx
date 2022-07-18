@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
 import { GraphModel } from '@tensorflow/tfjs'
 import FileUploadIcon from '@mui/icons-material/FileUpload'
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera'
@@ -20,21 +20,8 @@ type Mode = 'empty' | 'webcam' | 'image'
 
 const ContentContainer = ({ model, modelConfig }: Props) => {
   const [mode, setMode] = useState<Mode>('empty')
-  const nextMode = useRef<Mode>('empty')
-
-  const [webcamShouldClose, setWebcamShouldClose] = useState<boolean>(false)
-  const [webcamCloseable, setWebcamCloseable] = useState<boolean>(false)
-
   const [imageSource, setImageSource] = useState<string | null>(null)
   const [fullscreen, setFullscreen] = useState<boolean>(false)
-
-  useEffect(() => {
-    if (webcamCloseable) {
-      setMode(nextMode.current)
-      setWebcamCloseable(false)
-      setWebcamShouldClose(false)
-    }
-  }, [webcamCloseable])
 
   const handleChangeImage = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { files } = event.target
@@ -44,13 +31,9 @@ const ContentContainer = ({ model, modelConfig }: Props) => {
       /\.(jpe?g|png|gif)$/i.test(files[0].name)
     ) {
       setImageSource(URL.createObjectURL(files[0]))
-      if (mode === 'webcam') {
-        nextMode.current = 'image'
-        setWebcamShouldClose(true)
-      } else {
-        setMode('image')
-      }
+      setMode('image')
     }
+    // allows reselecting same file
     event.target.value = ''
   }
 
@@ -64,55 +47,38 @@ const ContentContainer = ({ model, modelConfig }: Props) => {
   }
 
   const handleCloseAll = () => {
-    if (mode === 'webcam') {
-      nextMode.current = 'empty'
-      setWebcamShouldClose(true)
-    } else {
-      setMode('empty')
-    }
+    setMode('empty')
   }
 
   return (
     <main style={{ paddingTop: '1rem', paddingBottom: '1rem' }}>
       <Container style={{ paddingLeft: '1rem', paddingRight: '1rem' }}>
-        {(() => {
-          if (mode === 'empty') {
-            return (
-              <Typography
-                variant='h5'
-                align='center'
-                color='text.secondary'
-                paragraph
-              >
-                Please upload your photo
-              </Typography>
-            )
-          }
-          if (mode === 'image') {
-            return (
-              <ImageContainer
-                onClickAction={toggleFullscreen}
-                model={model}
-                modelConfig={modelConfig}
-                imageSource={imageSource!}
-                fullscreen={fullscreen}
-              />
-            )
-          }
-          if (mode === 'webcam') {
-            return (
-              <WebcamContainer
-                onClickAction={toggleFullscreen}
-                model={model}
-                modelConfig={modelConfig}
-                shouldClose={webcamShouldClose}
-                setCloseable={setWebcamCloseable}
-                fullscreen={fullscreen}
-              />
-            )
-          }
-          return null
-        })()}
+        {mode === 'empty' ? (
+          <Typography
+            variant='h5'
+            align='center'
+            color='text.secondary'
+            paragraph
+          >
+            Please upload your photo
+          </Typography>
+        ) : mode === 'image' ? (
+          <ImageContainer
+            key={imageSource}
+            onClickAction={toggleFullscreen}
+            model={model}
+            modelConfig={modelConfig}
+            imageSource={imageSource!}
+            fullscreen={fullscreen}
+          />
+        ) : mode === 'webcam' ? (
+          <WebcamContainer
+            onClickAction={toggleFullscreen}
+            model={model}
+            modelConfig={modelConfig}
+            fullscreen={fullscreen}
+          />
+        ) : null}
         <Stack
           sx={{ pt: 4 }}
           display={'flex'}
