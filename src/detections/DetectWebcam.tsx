@@ -15,8 +15,6 @@ interface Props {
 
 const videoConstraints: MediaTrackConstraints = {
   facingMode: 'environment',
-  width: { ideal: 640 },
-  height: { ideal: 640 },
 }
 
 const DetectWebcam = (props: Props) => {
@@ -30,35 +28,35 @@ const DetectWebcam = (props: Props) => {
 
   const cardRef = useRef<HTMLDivElement | null>(null)
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
-  const frameRequest = useRef<number>(0)
 
   useEffect(() => {
-    const canvas = canvasRef.current
-    const card = cardRef.current
+    let frameRequest = 0
+    const canvas = canvasRef.current!
+    const card = cardRef.current!
+    const webcam = webcamRef.current!
 
     const animateDraw = () => {
-      if (webcamRef.current?.video && canvas && card) {
-        draw(
-          objects,
-          canvas,
-          card.clientWidth,
-          card.clientHeight,
-          webcamRef.current.video.videoWidth,
-          webcamRef.current.video.videoHeight
-        )
-        frameRequest.current = requestAnimationFrame(animateDraw)
+      const video = webcam.video
+      if (!video) {
+        return
       }
+      draw(
+        objects,
+        canvas,
+        card.clientWidth,
+        card.clientHeight,
+        video.videoWidth,
+        video.videoHeight
+      )
+      frameRequest = requestAnimationFrame(animateDraw)
     }
+
     animateDraw()
 
     return () => {
-      cancelAnimationFrame(frameRequest.current)
-      if (canvas) {
-        const ctx = canvas.getContext('2d')
-        if (ctx) {
-          ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
-        }
-      }
+      cancelAnimationFrame(frameRequest)
+      const ctx = canvas.getContext('2d')!
+      ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
     }
   }, [objects, webcamRef])
 
