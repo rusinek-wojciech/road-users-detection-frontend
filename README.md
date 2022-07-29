@@ -6,4 +6,4 @@ Tensorflow.js model in react app
 
 Move model to public/tensorflow/
 
-Add configuration in config.ts and change default config in state.ts
+Add configuration in config.ts and change modelConfig in state.ts
