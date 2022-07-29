@@ -1,18 +1,19 @@
 import { PaletteMode } from '@mui/material'
 import { GraphModel } from '@tensorflow/tfjs'
-import { Config, ssdMobilenet } from '../services/config'
+import { MODEL } from '../config/config'
+import { ModelConfig } from '../config/models'
 import { getPaletteMode } from '../services/theme'
 
 export interface State {
   model: GraphModel | null
   sidebarEnabled: boolean
   paletteMode: PaletteMode
-  modelConfig: Config
+  modelConfig: ModelConfig
 }
 
 export const initialState: State = {
   model: null,
   sidebarEnabled: false,
   paletteMode: getPaletteMode(),
-  modelConfig: ssdMobilenet(),
+  modelConfig: MODEL,
 }

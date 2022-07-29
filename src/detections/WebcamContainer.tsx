@@ -2,14 +2,14 @@ import { memo, useEffect, useRef, useState } from 'react'
 import { Dialog } from '@mui/material'
 import { GraphModel } from '@tensorflow/tfjs'
 import { DetectedObject, detectVideo } from '../services/detection'
-import { Config } from '../services/config'
+import { ModelConfig } from '../config/models'
 import DetectWebcam from './DetectWebcam'
 import Webcam from 'react-webcam'
 
 interface Props {
   onClickAction: () => void
   model: GraphModel
-  modelConfig: Config
+  modelConfig: ModelConfig
   fullscreen?: boolean
 }
 

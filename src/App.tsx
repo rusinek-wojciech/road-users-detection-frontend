@@ -14,7 +14,7 @@ import {
   setModel,
 } from './store/actions'
 import { warmUp } from './services/detection'
-import { WARMUP_TIME } from './services/config'
+import { MODEL_WARMUP_TIME } from './config/config'
 
 const App = () => {
   const { sidebarEnabled, paletteMode, model, modelConfig } = useAppState()
@@ -34,7 +34,7 @@ const App = () => {
           warmUp(m)
         })
         .catch(() => console.error('Failed to fetch model'))
-        .finally(() => setTimeout(() => setLoading(false), WARMUP_TIME))
+        .finally(() => setTimeout(() => setLoading(false), MODEL_WARMUP_TIME))
     }
   }, [dispatch, model, modelConfig])
 

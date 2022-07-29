@@ -2,13 +2,13 @@ import { memo, useEffect, useState } from 'react'
 import { Dialog } from '@mui/material'
 import { GraphModel } from '@tensorflow/tfjs'
 import { DetectedObject, detectImage } from '../services/detection'
-import { Config } from '../services/config'
+import { ModelConfig } from '../config/models'
 import DetectImage from './DetectImage'
 
 interface Props {
   onClickAction: () => void
   model: GraphModel
-  modelConfig: Config
+  modelConfig: ModelConfig
   imageSource: string
   fullscreen?: boolean
 }

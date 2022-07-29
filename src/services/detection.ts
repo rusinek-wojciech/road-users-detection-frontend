@@ -1,5 +1,5 @@
 import * as tf from '@tensorflow/tfjs'
-import { Config } from './config'
+import { ModelConfig } from '../config/models'
 
 export interface DetectedObject {
   label: {
@@ -19,7 +19,7 @@ export const warmUp = (model: tf.GraphModel): void => {
 
 export const detectImage = (
   model: tf.GraphModel,
-  config: Config,
+  config: ModelConfig,
   source: HTMLImageElement
 ): Promise<DetectedObject[]> => {
   return detect(
@@ -33,7 +33,7 @@ export const detectImage = (
 
 export const detectVideo = (
   model: tf.GraphModel,
-  config: Config,
+  config: ModelConfig,
   source: HTMLVideoElement
 ): Promise<DetectedObject[]> => {
   return detect(model, config, source, source.videoWidth, source.videoHeight)
@@ -41,7 +41,7 @@ export const detectVideo = (
 
 export const detect = async (
   model: tf.GraphModel,
-  config: Config,
+  config: ModelConfig,
   source: HTMLImageElement | HTMLVideoElement,
   width: number,
   height: number

@@ -7,13 +7,13 @@ import Typography from '@mui/material/Typography'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import Button from '@mui/material/Button'
-import { Config } from '../services/config'
+import { ModelConfig } from '../config/models'
 import ImageContainer from './ImageContainer'
 import WebcamContainer from './WebcamContainer'
 
 interface Props {
   model: GraphModel
-  modelConfig: Config
+  modelConfig: ModelConfig
 }
 
 type Mode = 'empty' | 'webcam' | 'image'

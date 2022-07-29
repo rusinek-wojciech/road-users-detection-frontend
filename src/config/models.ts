@@ -1,10 +1,9 @@
-export interface Config {
+export interface ModelConfig {
   labels: {
     name: string
     color: string
   }[]
   treshold: number
-  // objects indecies
   index: {
     boxes: number // [1,2,3,4]
     classes: number // liczby całk
@@ -15,8 +14,7 @@ export interface Config {
 
 const getModelPath = (model: string): string => `tensorflow/${model}/model.json`
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const ssdMobilenet = (): Config => ({
+export const ssdMobilenet: ModelConfig = {
   labels: [
     {
       name: 'rowerzysta',
@@ -46,6 +44,4 @@ export const ssdMobilenet = (): Config => ({
     scores: 4,
   },
   path: getModelPath('ssd_mobilenet'),
-})
-
-export const WARMUP_TIME = 3000
+}
