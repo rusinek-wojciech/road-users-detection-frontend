@@ -2,10 +2,12 @@ import ReactDOM from 'react-dom'
 import { StrictMode } from 'react'
 import App from './App'
 import { AppContextProvider } from './store/Context'
-import * as serviceWorkerRegistration from './serviceWorkerRegistration'
-import { initialize } from './init'
+import { register } from './serviceWorkerRegistration'
+import { enableProdMode, setBackend } from '@tensorflow/tfjs'
 
-initialize()
+enableProdMode()
+setBackend('webgl')
+register()
 
 ReactDOM.render(
   <StrictMode>
@@ -15,7 +17,3 @@ ReactDOM.render(
   </StrictMode>,
   document.getElementById('root')
 )
-
-serviceWorkerRegistration.register({
-  onSuccess: () => console.log('Registered service worker'),
-})

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { createTheme, CssBaseline, ThemeProvider } from '@mui/material'
-import * as tf from '@tensorflow/tfjs'
+import { ready, loadGraphModel } from '@tensorflow/tfjs'
+
 import BackdropSpinner from './components/BackdropSpinner'
 import ContentContainer from './detections/ContentContainer'
 import Navbar from './components/Navbar'
@@ -27,11 +28,11 @@ const App = () => {
 
   useEffect(() => {
     if (!model) {
-      tf.ready()
-        .then(() => tf.loadGraphModel(modelConfig.path))
-        .then((m) => {
-          dispatch(setModel(m))
-          warmUp(m)
+      ready()
+        .then(() => loadGraphModel(modelConfig.path))
+        .then((model) => {
+          dispatch(setModel(model))
+          warmUp(model)
         })
         .catch(() => console.error('Failed to fetch model'))
         .finally(() => setTimeout(() => setLoading(false), MODEL_WARMUP_TIME))
