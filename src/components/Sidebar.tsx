@@ -10,8 +10,6 @@ import DarkModeIcon from '@mui/icons-material/DarkMode'
 import FormatColorFillIcon from '@mui/icons-material/FormatColorFill'
 import { Avatar, ListItemAvatar, PaletteMode } from '@mui/material'
 
-const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1)
-
 interface Label {
   name: string
   color: string
@@ -66,17 +64,14 @@ const Sidebar = ({
           </List>
           <Divider />
           <List subheader={<ListSubheader>Labels</ListSubheader>}>
-            {labels.map((label) => (
-              <ListItem button key={label.name}>
+            {labels.map(({ name, color }) => (
+              <ListItem button key={name}>
                 <ListItemAvatar>
-                  <Avatar style={{ backgroundColor: label.color }}>
+                  <Avatar style={{ backgroundColor: color }}>
                     <FormatColorFillIcon />
                   </Avatar>
                 </ListItemAvatar>
-                <ListItemText
-                  primary={capitalize(label.name)}
-                  secondary={label.color}
-                />
+                <ListItemText primary={name} secondary={color} />
               </ListItem>
             ))}
           </List>

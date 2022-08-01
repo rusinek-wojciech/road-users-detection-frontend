@@ -17,19 +17,19 @@ const getModelPath = (model: string): string => `tensorflow/${model}/model.json`
 export const ssdMobilenet: ModelConfig = {
   labels: [
     {
-      name: 'rowerzysta',
+      name: 'Rowerzysta',
       color: '#D10000',
     },
     {
-      name: 'hulajnoga elektryczna',
+      name: 'Hulajnoga elektryczna',
       color: '#FFC400',
     },
     {
-      name: 'rolki',
+      name: 'Rolki',
       color: '#6495ED',
     },
     {
-      name: 'pieszy',
+      name: 'Pieszy',
       color: '#7FFF00',
     },
     {
