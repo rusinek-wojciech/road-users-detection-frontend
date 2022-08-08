@@ -1,8 +1,8 @@
 import { useEffect, useRef, memo } from 'react'
 import { Card, CardActionArea, CardMedia } from '@mui/material'
-import { DetectedObject } from '../services/detection'
 import { draw } from '../services/drawing'
 import Spinner from '../components/Spinner'
+import { DetectedObject } from '../types'
 
 interface Props {
   loading: boolean

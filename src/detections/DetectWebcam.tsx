@@ -1,9 +1,9 @@
 import { RefObject, useEffect, useRef, memo } from 'react'
 import { Card, CardActionArea } from '@mui/material'
-import { DetectedObject } from '../services/detection'
 import { draw } from '../services/drawing'
 import Webcam from 'react-webcam'
 import Spinner from '../components/Spinner'
+import { DetectedObject } from '../types'
 
 interface Props {
   loading: boolean

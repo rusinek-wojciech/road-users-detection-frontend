@@ -14,7 +14,7 @@ import {
   togglePaletteMode,
   setModel,
 } from './store/actions'
-import { warmUp } from './services/detection'
+import detection from './services/detection'
 
 const App = () => {
   const { sidebarEnabled, paletteMode, model, modelConfig } = useAppState()
@@ -31,7 +31,7 @@ const App = () => {
         .then(() => loadGraphModel(modelConfig.path))
         .then((model) => {
           dispatch(setModel(model))
-          warmUp(model)
+          detection.warmUp(model)
         })
         .catch(() => console.error('Failed to fetch model'))
         .finally(() => setLoading(false))

@@ -1,9 +1,9 @@
 import { memo, useEffect, useState } from 'react'
 import { Dialog } from '@mui/material'
 import { GraphModel } from '@tensorflow/tfjs'
-import { DetectedObject, detectImage } from '../services/detection'
-import { ModelConfig } from '../config/models'
+import detection from '../services/detection'
 import DetectImage from './DetectImage'
+import { DetectedObject, ModelConfig } from '../types'
 
 interface Props {
   onClickAction: () => void
@@ -32,7 +32,7 @@ const ImageContainer = (props: Props) => {
     img.src = imageSource
 
     const detectOnImage = async () => {
-      const objects = await detectImage(model, modelConfig, img)
+      const objects = await detection.detectImage(model, modelConfig, img)
       if (mounted) {
         setObjects(objects)
         setImageSize([img.naturalWidth, img.naturalHeight])

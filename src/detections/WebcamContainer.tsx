@@ -1,10 +1,10 @@
 import { memo, useEffect, useRef, useState } from 'react'
 import { Dialog } from '@mui/material'
 import { GraphModel } from '@tensorflow/tfjs'
-import { DetectedObject, detectVideo } from '../services/detection'
-import { ModelConfig } from '../config/models'
+import detection from '../services/detection'
 import DetectWebcam from './DetectWebcam'
 import Webcam from 'react-webcam'
+import { DetectedObject, ModelConfig } from '../types'
 
 interface Props {
   onClickAction: () => void
@@ -32,7 +32,7 @@ const WebcamContainer = (props: Props) => {
       if (!video) {
         return
       }
-      const objects = await detectVideo(model, modelConfig, video)
+      const objects = await detection.detectVideo(model, modelConfig, video)
       if (mounted) {
         setObjects(objects)
         frameRequest = requestAnimationFrame(animateDetect)

@@ -1,4 +1,4 @@
-import { DetectedObject } from './detection'
+import { Box, DetectedObject } from '../types'
 
 const drawText = (
   text: string,
@@ -29,32 +29,26 @@ const drawBox = (
 const drawObjects = (
   objects: DetectedObject[],
   ctx: CanvasRenderingContext2D,
-  widthScale?: number,
-  heightScale?: number
+  widthScale: number,
+  heightScale: number
 ): void => {
   for (let i = 0; i < objects.length; i++) {
     const { label, box, score } = objects[i]
-    const resizeBox: [number, number, number, number] = [...box]
+    const resizeBox: Box = [...box]
 
-    if (widthScale) {
-      resizeBox[0] *= widthScale
-      resizeBox[2] *= widthScale
-    }
-    if (heightScale) {
-      resizeBox[1] *= heightScale
-      resizeBox[3] *= heightScale
-    }
+    resizeBox[0] *= widthScale
+    resizeBox[2] *= widthScale
+    resizeBox[1] *= heightScale
+    resizeBox[3] *= heightScale
 
-    if (resizeBox[1] <= 40) {
-      drawText(
-        `${label.name} ${score}`,
-        resizeBox[0] + 5,
-        resizeBox[1] + 20,
-        ctx
-      )
-    } else {
-      drawText(`${label.name} ${score}`, resizeBox[0], resizeBox[1] - 5, ctx)
-    }
+    resizeBox[1] <= 40
+      ? drawText(
+          `${label.name} ${score}`,
+          resizeBox[0] + 5,
+          resizeBox[1] + 20,
+          ctx
+        )
+      : drawText(`${label.name} ${score}`, resizeBox[0], resizeBox[1] - 5, ctx)
 
     drawBox(resizeBox, label.color, ctx)
   }
@@ -68,11 +62,9 @@ export const draw = (
   width: number,
   height: number
 ): void => {
-  const ctx = canvas.getContext('2d')
-  if (ctx) {
-    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
-    canvas.width = clientWidth
-    canvas.height = clientHeight
-    drawObjects(objects, ctx, clientWidth / width, clientHeight / height)
-  }
+  const ctx = canvas.getContext('2d')!
+  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
+  canvas.width = clientWidth
+  canvas.height = clientHeight
+  drawObjects(objects, ctx, clientWidth / width, clientHeight / height)
 }

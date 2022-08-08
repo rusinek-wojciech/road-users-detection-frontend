@@ -7,7 +7,7 @@ import Typography from '@mui/material/Typography'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import Button from '@mui/material/Button'
-import { ModelConfig } from '../config/models'
+import { ModelConfig } from '../types'
 import ImageContainer from './ImageContainer'
 import WebcamContainer from './WebcamContainer'
 

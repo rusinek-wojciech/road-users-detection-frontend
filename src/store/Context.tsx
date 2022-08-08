@@ -5,9 +5,10 @@ import {
   useContext,
   useReducer,
 } from 'react'
+import { State } from './state'
 import { Actions } from './actions'
 import { reducer } from './reducer'
-import { State, initialState } from './state'
+import { initialState } from './state'
 
 interface Props {
   children: ReactNode

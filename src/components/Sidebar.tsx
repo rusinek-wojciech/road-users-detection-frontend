@@ -9,11 +9,7 @@ import LightModeIcon from '@mui/icons-material/LightMode'
 import DarkModeIcon from '@mui/icons-material/DarkMode'
 import FormatColorFillIcon from '@mui/icons-material/FormatColorFill'
 import { Avatar, ListItemAvatar, PaletteMode } from '@mui/material'
-
-interface Label {
-  name: string
-  color: string
-}
+import { Label } from '../types'
 
 interface Props {
   sidebarEnabled: boolean

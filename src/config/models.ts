@@ -1,16 +1,4 @@
-export interface ModelConfig {
-  labels: {
-    name: string
-    color: string
-  }[]
-  treshold: number
-  index: {
-    boxes: number // [1,2,3,4]
-    classes: number // liczby całk
-    scores: number // liczby 0 - 1
-  }
-  path: string
-}
+import { ModelConfig } from '../types'
 
 const getModelPath = (model: string): string => `tensorflow/${model}/model.json`
 
