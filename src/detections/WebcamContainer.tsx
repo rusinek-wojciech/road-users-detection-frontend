@@ -4,17 +4,16 @@ import { GraphModel } from '@tensorflow/tfjs'
 import detection from '../services/detection'
 import DetectWebcam from './DetectWebcam'
 import Webcam from 'react-webcam'
-import { DetectedObject, ModelConfig } from '../types'
+import { DetectedObject } from '../types'
 
 interface Props {
   onClickAction: () => void
   model: GraphModel
-  modelConfig: ModelConfig
   fullscreen?: boolean
 }
 
 const WebcamContainer = (props: Props) => {
-  const { onClickAction, model, modelConfig, fullscreen = false } = props
+  const { onClickAction, model, fullscreen = false } = props
 
   const webcamRef = useRef<Webcam | null>(null)
   const webcamFullscreenRef = useRef<Webcam | null>(null)
@@ -32,7 +31,7 @@ const WebcamContainer = (props: Props) => {
       if (!video) {
         return
       }
-      const objects = await detection.detectVideo(model, modelConfig, video)
+      const objects = await detection.detectVideo(model, video)
       if (mounted) {
         setObjects(objects)
         frameRequest = requestAnimationFrame(animateDetect)
@@ -54,7 +53,7 @@ const WebcamContainer = (props: Props) => {
       cancelAnimationFrame(frameRequest)
       mounted = false
     }
-  }, [model, modelConfig])
+  }, [model])
 
   return (
     <>

@@ -7,18 +7,16 @@ import Typography from '@mui/material/Typography'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import Button from '@mui/material/Button'
-import { ModelConfig } from '../types'
 import ImageContainer from './ImageContainer'
 import WebcamContainer from './WebcamContainer'
 
 interface Props {
   model: GraphModel
-  modelConfig: ModelConfig
 }
 
 type Mode = 'empty' | 'webcam' | 'image'
 
-const ContentContainer = ({ model, modelConfig }: Props) => {
+const ContentContainer = ({ model }: Props) => {
   const [mode, setMode] = useState<Mode>('empty')
   const [imageSource, setImageSource] = useState<string | null>(null)
   const [fullscreen, setFullscreen] = useState<boolean>(false)
@@ -67,7 +65,6 @@ const ContentContainer = ({ model, modelConfig }: Props) => {
             key={imageSource}
             onClickAction={toggleFullscreen}
             model={model}
-            modelConfig={modelConfig}
             imageSource={imageSource!}
             fullscreen={fullscreen}
           />
@@ -75,7 +72,6 @@ const ContentContainer = ({ model, modelConfig }: Props) => {
           <WebcamContainer
             onClickAction={toggleFullscreen}
             model={model}
-            modelConfig={modelConfig}
             fullscreen={fullscreen}
           />
         ) : null}

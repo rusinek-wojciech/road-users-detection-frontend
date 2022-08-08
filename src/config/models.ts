@@ -25,7 +25,7 @@ const ssdMobilenet: ModelConfig = {
       color: '#008B8B',
     },
   ],
-  treshold: 0.5,
+  threshold: 0.5,
   index: {
     boxes: 2,
     classes: 3,
@@ -34,4 +34,4 @@ const ssdMobilenet: ModelConfig = {
   path: getModelPath('ssd_mobilenet'),
 }
 
-export const MODEL = ssdMobilenet
+export const MODEL_CONFIG = ssdMobilenet

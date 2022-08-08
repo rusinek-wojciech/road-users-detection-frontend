@@ -9,11 +9,10 @@ import LightModeIcon from '@mui/icons-material/LightMode'
 import DarkModeIcon from '@mui/icons-material/DarkMode'
 import FormatColorFillIcon from '@mui/icons-material/FormatColorFill'
 import { Avatar, ListItemAvatar, PaletteMode } from '@mui/material'
-import { Label } from '../types'
+import { MODEL_CONFIG } from '../config/models'
 
 interface Props {
   sidebarEnabled: boolean
-  labels: Label[]
   paletteMode: PaletteMode
   onCloseSidebar: () => void
   onToggleSidebar: () => void
@@ -22,13 +21,14 @@ interface Props {
 
 const Sidebar = ({
   sidebarEnabled,
-  labels,
   paletteMode,
   onCloseSidebar,
   onToggleSidebar,
   onTogglePaletteMode,
 }: Props) => {
   const isDarkMode = paletteMode === 'dark'
+  const labels = MODEL_CONFIG.labels
+
   return (
     <div>
       <Drawer anchor={'left'} open={sidebarEnabled} onClose={onCloseSidebar}>

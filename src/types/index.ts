@@ -19,7 +19,7 @@ export interface DetectedObject {
 
 export interface ModelConfig {
   labels: Label[]
-  treshold: number
+  threshold: number
   index: Index
   path: string
 }

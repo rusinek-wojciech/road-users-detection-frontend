@@ -4,11 +4,6 @@ import { State } from './state'
 
 export const reducer = (state: State, action: Actions): State => {
   switch (action.type) {
-    case ActionType.SET_MODEL:
-      return {
-        ...state,
-        model: action.payload,
-      }
     case ActionType.TOGGLE_SIDEBAR:
       return {
         ...state,

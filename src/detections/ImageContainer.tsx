@@ -3,24 +3,17 @@ import { Dialog } from '@mui/material'
 import { GraphModel } from '@tensorflow/tfjs'
 import detection from '../services/detection'
 import DetectImage from './DetectImage'
-import { DetectedObject, ModelConfig } from '../types'
+import { DetectedObject } from '../types'
 
 interface Props {
   onClickAction: () => void
   model: GraphModel
-  modelConfig: ModelConfig
   imageSource: string
   fullscreen?: boolean
 }
 
 const ImageContainer = (props: Props) => {
-  const {
-    onClickAction,
-    model,
-    modelConfig,
-    imageSource,
-    fullscreen = false,
-  } = props
+  const { onClickAction, model, imageSource, fullscreen = false } = props
 
   const [objects, setObjects] = useState<DetectedObject[]>([])
   const [[width, height], setImageSize] = useState<[number, number]>([0, 0])
@@ -32,7 +25,7 @@ const ImageContainer = (props: Props) => {
     img.src = imageSource
 
     const detectOnImage = async () => {
-      const objects = await detection.detectImage(model, modelConfig, img)
+      const objects = await detection.detectImage(model, img)
       if (mounted) {
         setObjects(objects)
         setImageSize([img.naturalWidth, img.naturalHeight])
@@ -45,7 +38,7 @@ const ImageContainer = (props: Props) => {
     return () => {
       mounted = false
     }
-  }, [imageSource, model, modelConfig])
+  }, [imageSource, model])
 
   return (
     <>
