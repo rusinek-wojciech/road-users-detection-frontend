@@ -1,5 +1,6 @@
 import * as tf from '@tensorflow/tfjs'
 import { ModelConfig } from '../config/models'
+import { Semaphore } from '../utils/semaphore'
 
 export interface DetectedObject {
   label: {
@@ -10,11 +11,15 @@ export interface DetectedObject {
   box: [number, number, number, number]
 }
 
+const throttler = new Semaphore()
+
 export const warmUp = (model: tf.GraphModel): void => {
-  tf.engine().startScope()
-  model
-    .executeAsync(tf.zeros([1, 300, 300, 3]).toInt())
-    .finally(() => tf.engine().endScope())
+  throttler.call(async () => {
+    tf.engine().startScope()
+    model
+      .executeAsync(tf.zeros([1, 300, 300, 3]).toInt())
+      .finally(() => tf.engine().endScope())
+  })
 }
 
 export const detectImage = (
@@ -22,7 +27,8 @@ export const detectImage = (
   config: ModelConfig,
   source: HTMLImageElement
 ): Promise<DetectedObject[]> => {
-  return detect(
+  return throttler.call(
+    detect,
     model,
     config,
     source,
@@ -36,7 +42,14 @@ export const detectVideo = (
   config: ModelConfig,
   source: HTMLVideoElement
 ): Promise<DetectedObject[]> => {
-  return detect(model, config, source, source.videoWidth, source.videoHeight)
+  return throttler.call(
+    detect,
+    model,
+    config,
+    source,
+    source.videoWidth,
+    source.videoHeight
+  )
 }
 
 export const detect = async (
@@ -48,7 +61,10 @@ export const detect = async (
 ): Promise<DetectedObject[]> => {
   const { boxes, classes, scores } = config.index
 
+  console.log('start')
+
   tf.engine().startScope()
+
   try {
     const tensorImage = await getTensorImage(source)
     const predictions: any = await model.executeAsync(tensorImage)
@@ -65,8 +81,10 @@ export const detect = async (
       height
     )
   } catch (e) {
+    console.log('error')
     console.error(e)
   } finally {
+    console.log('end')
     tf.engine().endScope()
   }
   return []

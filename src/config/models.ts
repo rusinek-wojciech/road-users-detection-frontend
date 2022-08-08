@@ -14,7 +14,7 @@ export interface ModelConfig {
 
 const getModelPath = (model: string): string => `tensorflow/${model}/model.json`
 
-export const ssdMobilenet: ModelConfig = {
+const ssdMobilenet: ModelConfig = {
   labels: [
     {
       name: 'Rowerzysta',
@@ -45,3 +45,5 @@ export const ssdMobilenet: ModelConfig = {
   },
   path: getModelPath('ssd_mobilenet'),
 }
+
+export const MODEL = ssdMobilenet

@@ -1,6 +1,6 @@
 import { PaletteMode } from '@mui/material'
 import { GraphModel } from '@tensorflow/tfjs'
-import { MODEL } from '../config/config'
+import { MODEL } from '../config/models'
 import { ModelConfig } from '../config/models'
 import { getPaletteMode } from '../services/theme'
 
