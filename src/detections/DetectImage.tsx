@@ -10,21 +10,19 @@ interface Props {
   imageSource: string
   width: number
   height: number
+  fullscreen: boolean
   onClickAction: () => void
-  fullscreen?: boolean
 }
 
-const DetectImage = (props: Props) => {
-  const {
-    loading,
-    objects,
-    imageSource,
-    width,
-    height,
-    onClickAction,
-    fullscreen = false,
-  } = props
-
+const DetectImage = ({
+  loading,
+  objects,
+  imageSource,
+  width,
+  height,
+  fullscreen,
+  onClickAction,
+}: Props) => {
   const cardRef = useRef<HTMLDivElement | null>(null)
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
 
@@ -35,7 +33,7 @@ const DetectImage = (props: Props) => {
 
     const animateDraw = () => {
       const { clientWidth, clientHeight } = card
-      draw(objects, canvas, clientWidth, clientHeight, width, height)
+      draw(objects, canvas, clientWidth, clientHeight, width)
       frameRequest = requestAnimationFrame(animateDraw)
     }
 

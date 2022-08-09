@@ -5,6 +5,8 @@ export interface Label {
 
 export type Box = [number, number, number, number]
 
+export type Source = HTMLImageElement | HTMLVideoElement
+
 interface Index {
   boxes: number // [1,2,3,4]
   classes: number // liczby całk

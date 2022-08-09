@@ -1,20 +1,18 @@
 import { memo, useEffect, useRef, useState } from 'react'
 import { Dialog } from '@mui/material'
 import { GraphModel } from '@tensorflow/tfjs'
-import detection from '../services/detection'
+import { synchronizedDetection } from '../services/detection'
 import DetectWebcam from './DetectWebcam'
 import Webcam from 'react-webcam'
 import { DetectedObject } from '../types'
 
 interface Props {
-  onClickAction: () => void
   model: GraphModel
-  fullscreen?: boolean
+  fullscreen: boolean
+  onClickAction: () => void
 }
 
-const WebcamContainer = (props: Props) => {
-  const { onClickAction, model, fullscreen = false } = props
-
+const WebcamContainer = ({ model, fullscreen, onClickAction }: Props) => {
   const webcamRef = useRef<Webcam | null>(null)
   const webcamFullscreenRef = useRef<Webcam | null>(null)
 
@@ -31,23 +29,25 @@ const WebcamContainer = (props: Props) => {
       if (!video) {
         return
       }
-      const objects = await detection.detectVideo(model, video)
+      const objects = await synchronizedDetection.onVideo(model, video)
       if (mounted) {
         setObjects(objects)
         frameRequest = requestAnimationFrame(animateDetect)
       }
     }
 
-    const handleVideo = () => {
-      animateDetect()
-      if (mounted) {
-        setLoading(false)
+    webcam.video!.addEventListener(
+      'loadeddata',
+      () => {
+        animateDetect()
+        if (mounted) {
+          setLoading(false)
+        }
+      },
+      {
+        once: true,
       }
-    }
-
-    webcam.video!.addEventListener('loadeddata', handleVideo, {
-      once: true,
-    })
+    )
 
     return () => {
       cancelAnimationFrame(frameRequest)
@@ -68,7 +68,7 @@ const WebcamContainer = (props: Props) => {
           objects={objects}
           webcamRef={webcamFullscreenRef}
           onClickAction={onClickAction}
-          fullscreen
+          fullscreen={true}
         />
       </Dialog>
       <DetectWebcam
@@ -76,6 +76,7 @@ const WebcamContainer = (props: Props) => {
         objects={objects}
         webcamRef={webcamRef}
         onClickAction={onClickAction}
+        fullscreen={false}
       />
     </>
   )

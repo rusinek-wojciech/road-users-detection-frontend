@@ -9,23 +9,21 @@ interface Props {
   loading: boolean
   objects: DetectedObject[]
   webcamRef: RefObject<Webcam>
+  fullscreen: boolean
   onClickAction: () => void
-  fullscreen?: boolean
 }
 
-const videoConstraints: MediaTrackConstraints = {
+const contraints: MediaTrackConstraints = {
   facingMode: 'environment',
 }
 
-const DetectWebcam = (props: Props) => {
-  const {
-    loading,
-    objects,
-    webcamRef,
-    onClickAction,
-    fullscreen = false,
-  } = props
-
+const DetectWebcam = ({
+  loading,
+  objects,
+  webcamRef,
+  fullscreen,
+  onClickAction,
+}: Props) => {
   const cardRef = useRef<HTMLDivElement | null>(null)
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
 
@@ -45,8 +43,7 @@ const DetectWebcam = (props: Props) => {
         canvas,
         card.clientWidth,
         card.clientHeight,
-        video.videoWidth,
-        video.videoHeight
+        video.videoWidth
       )
       frameRequest = requestAnimationFrame(animateDraw)
     }
@@ -95,7 +92,7 @@ const DetectWebcam = (props: Props) => {
             display: 'block',
             maxHeight: fullscreen ? '100vh' : '83vh',
           }}
-          videoConstraints={videoConstraints}
+          videoConstraints={contraints}
         />
       </CardActionArea>
     </Card>

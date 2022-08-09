@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, ChangeEvent } from 'react'
 import { GraphModel } from '@tensorflow/tfjs'
 import FileUploadIcon from '@mui/icons-material/FileUpload'
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera'
@@ -16,12 +16,12 @@ interface Props {
 
 type Mode = 'empty' | 'webcam' | 'image'
 
-const ContentContainer = ({ model }: Props) => {
+const MainContainer = ({ model }: Props) => {
   const [mode, setMode] = useState<Mode>('empty')
   const [imageSource, setImageSource] = useState<string | null>(null)
   const [fullscreen, setFullscreen] = useState<boolean>(false)
 
-  const handleChangeImage = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChangeImage = (event: ChangeEvent<HTMLInputElement>) => {
     const { files } = event.target
     if (
       files &&
@@ -124,4 +124,4 @@ const ContentContainer = ({ model }: Props) => {
   )
 }
 
-export default ContentContainer
+export default MainContainer

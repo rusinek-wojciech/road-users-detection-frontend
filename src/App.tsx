@@ -1,54 +1,48 @@
 import { useEffect, useMemo, useState } from 'react'
-import { createTheme, CssBaseline, ThemeProvider } from '@mui/material'
 import {
-  ready,
-  loadGraphModel,
-  GraphModel,
-  enableProdMode,
-  setBackend,
-} from '@tensorflow/tfjs'
+  createTheme,
+  CssBaseline,
+  PaletteMode,
+  ThemeProvider,
+} from '@mui/material'
+import { GraphModel } from '@tensorflow/tfjs'
 
 import BackdropSpinner from './components/BackdropSpinner'
-import ContentContainer from './detections/ContentContainer'
+import MainContainer from './detections/MainContainer'
 import Navbar from './components/Navbar'
 import Sidebar from './components/Sidebar'
-import { getDesignTokens } from './services/theme'
-import { useAppDispatch, useAppState } from './store/Context'
-import { toggleSidebar, closeSidebar, togglePaletteMode } from './store/actions'
-import detection from './services/detection'
-import { MODEL_CONFIG } from './config/models'
-
-const loadModel = async () => {
-  enableProdMode()
-  setBackend('webgl')
-  await ready()
-  const model = await loadGraphModel(MODEL_CONFIG.path)
-  detection.warmUp(model)
-  return model
-}
+import { getDesignTokens, paletteModeLS } from './services/theme'
+import { loadModelAndWarmUp } from './services/detection'
 
 const App = () => {
   const [model, setModel] = useState<GraphModel>()
-  const { sidebarEnabled, paletteMode } = useAppState()
-  const dispatch = useAppDispatch()
+  const [sidebarEnabled, setSidebarEnabled] = useState<boolean>(false)
+  const [paletteMode, setPaletteMode] = useState<PaletteMode>(() =>
+    paletteModeLS.get()
+  )
+
   const theme = useMemo(
     () => createTheme(getDesignTokens(paletteMode)),
     [paletteMode]
   )
 
   useEffect(() => {
-    loadModel().then(setModel)
+    loadModelAndWarmUp().then(setModel)
   }, [])
 
-  const handleTogglePaletteMode = () => dispatch(togglePaletteMode())
-  const handleCloseSidebar = () => dispatch(closeSidebar())
-  const handleToggleSidebar = () => dispatch(toggleSidebar())
+  const handleTogglePaletteMode = (): void => {
+    const newPaletteMde = paletteMode === 'light' ? 'dark' : 'light'
+    paletteModeLS.set(newPaletteMde)
+    setPaletteMode(newPaletteMde)
+  }
+  const handleCloseSidebar = (): void => setSidebarEnabled(false)
+  const handleToggleSidebar = (): void => setSidebarEnabled(!sidebarEnabled)
 
   const loading = !model
 
   return (
     <ThemeProvider theme={theme}>
-      {loading && <BackdropSpinner />}
+      <BackdropSpinner open={loading} />
       <CssBaseline />
       <Navbar
         paletteMode={paletteMode}
@@ -62,7 +56,7 @@ const App = () => {
         paletteMode={paletteMode}
         onTogglePaletteMode={handleTogglePaletteMode}
       />
-      {model && <ContentContainer model={model} />}
+      {!loading && <MainContainer model={model} />}
     </ThemeProvider>
   )
 }

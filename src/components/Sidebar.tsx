@@ -27,7 +27,6 @@ const Sidebar = ({
   onTogglePaletteMode,
 }: Props) => {
   const isDarkMode = paletteMode === 'dark'
-  const labels = MODEL_CONFIG.labels
 
   return (
     <div>
@@ -60,7 +59,7 @@ const Sidebar = ({
           </List>
           <Divider />
           <List subheader={<ListSubheader>Labels</ListSubheader>}>
-            {labels.map(({ name, color }) => (
+            {MODEL_CONFIG.labels.map(({ name, color }) => (
               <ListItem button key={name}>
                 <ListItemAvatar>
                   <Avatar style={{ backgroundColor: color }}>

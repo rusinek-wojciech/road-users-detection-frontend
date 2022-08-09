@@ -1,20 +1,23 @@
 import { memo, useEffect, useState } from 'react'
 import { Dialog } from '@mui/material'
 import { GraphModel } from '@tensorflow/tfjs'
-import detection from '../services/detection'
+import { synchronizedDetection } from '../services/detection'
 import DetectImage from './DetectImage'
 import { DetectedObject } from '../types'
 
 interface Props {
-  onClickAction: () => void
   model: GraphModel
   imageSource: string
-  fullscreen?: boolean
+  fullscreen: boolean
+  onClickAction: () => void
 }
 
-const ImageContainer = (props: Props) => {
-  const { onClickAction, model, imageSource, fullscreen = false } = props
-
+const ImageContainer = ({
+  model,
+  imageSource,
+  fullscreen,
+  onClickAction,
+}: Props) => {
   const [objects, setObjects] = useState<DetectedObject[]>([])
   const [[width, height], setImageSize] = useState<[number, number]>([0, 0])
   const [loading, setLoading] = useState<boolean>(true)
@@ -24,16 +27,18 @@ const ImageContainer = (props: Props) => {
     const img = new Image()
     img.src = imageSource
 
-    const detectOnImage = async () => {
-      const objects = await detection.detectImage(model, img)
-      if (mounted) {
-        setObjects(objects)
-        setImageSize([img.naturalWidth, img.naturalHeight])
-        setLoading(false)
-      }
-    }
-
-    img.addEventListener('load', detectOnImage, { once: true })
+    img.addEventListener(
+      'load',
+      async () => {
+        const objects = await synchronizedDetection.onImage(model, img)
+        if (mounted) {
+          setObjects(objects)
+          setImageSize([img.naturalWidth, img.naturalHeight])
+          setLoading(false)
+        }
+      },
+      { once: true }
+    )
 
     return () => {
       mounted = false
@@ -65,6 +70,7 @@ const ImageContainer = (props: Props) => {
         width={width}
         height={height}
         onClickAction={onClickAction}
+        fullscreen={false}
       />
     </>
   )

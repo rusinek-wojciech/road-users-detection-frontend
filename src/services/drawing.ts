@@ -15,7 +15,7 @@ const drawText = (
 }
 
 const drawBox = (
-  box: [number, number, number, number],
+  box: Box,
   color: string,
   ctx: CanvasRenderingContext2D
 ): void => {
@@ -26,45 +26,39 @@ const drawBox = (
   ctx.stroke()
 }
 
-const drawObjects = (
-  objects: DetectedObject[],
-  ctx: CanvasRenderingContext2D,
-  widthScale: number,
-  heightScale: number
-): void => {
-  for (let i = 0; i < objects.length; i++) {
-    const { label, box, score } = objects[i]
-    const resizeBox: Box = [...box]
-
-    resizeBox[0] *= widthScale
-    resizeBox[2] *= widthScale
-    resizeBox[1] *= heightScale
-    resizeBox[3] *= heightScale
-
-    resizeBox[1] <= 40
-      ? drawText(
-          `${label.name} ${score}`,
-          resizeBox[0] + 5,
-          resizeBox[1] + 20,
-          ctx
-        )
-      : drawText(`${label.name} ${score}`, resizeBox[0], resizeBox[1] - 5, ctx)
-
-    drawBox(resizeBox, label.color, ctx)
-  }
-}
-
 export const draw = (
   objects: DetectedObject[],
   canvas: HTMLCanvasElement,
   clientWidth: number,
   clientHeight: number,
-  width: number,
-  height: number
+  width: number
 ): void => {
   const ctx = canvas.getContext('2d')!
-  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height)
   canvas.width = clientWidth
   canvas.height = clientHeight
-  drawObjects(objects, ctx, clientWidth / width, clientHeight / height)
+
+  const scale = clientWidth / width
+
+  for (let i = 0; i < objects.length; i++) {
+    const { label, box, score } = objects[i]
+    const resizedBox = box.map((p) => p * scale) as Box
+
+    resizedBox[1] <= 40
+      ? drawText(
+          `${label.name} ${score}`,
+          resizedBox[0] + 5,
+          resizedBox[1] + 20,
+          ctx
+        )
+      : drawText(
+          `${label.name} ${score}`,
+          resizedBox[0],
+          resizedBox[1] - 5,
+          ctx
+        )
+
+    drawBox(resizedBox, label.color, ctx)
+  }
 }
