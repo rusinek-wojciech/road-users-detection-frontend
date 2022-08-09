@@ -8,7 +8,7 @@ import {
 import { GraphModel } from '@tensorflow/tfjs'
 
 import BackdropSpinner from './components/BackdropSpinner'
-import MainContainer from './detections/MainContainer'
+import Detection from './detections/Detection'
 import Navbar from './components/Navbar'
 import Sidebar from './components/Sidebar'
 import { getDesignTokens, paletteModeLS } from './services/theme'
@@ -56,7 +56,7 @@ const App = () => {
         paletteMode={paletteMode}
         onTogglePaletteMode={handleTogglePaletteMode}
       />
-      {!loading && <MainContainer model={model} />}
+      {!loading && <Detection model={model} />}
     </ThemeProvider>
   )
 }

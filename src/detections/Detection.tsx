@@ -14,25 +14,22 @@ interface Props {
   model: GraphModel
 }
 
-type Mode = 'empty' | 'webcam' | 'image'
-
-const MainContainer = ({ model }: Props) => {
-  const [mode, setMode] = useState<Mode>('empty')
+const Detection = ({ model }: Props) => {
+  const [mode, setMode] = useState<'empty' | 'webcam' | 'image'>('empty')
   const [imageSource, setImageSource] = useState<string | null>(null)
   const [fullscreen, setFullscreen] = useState<boolean>(false)
 
-  const handleChangeImage = (event: ChangeEvent<HTMLInputElement>) => {
-    const { files } = event.target
-    if (
-      files &&
-      files.length > 0 &&
-      /\.(jpe?g|png|gif)$/i.test(files[0].name)
-    ) {
-      setImageSource(URL.createObjectURL(files[0]))
-      setMode('image')
+  const handleChangeImage = (event: ChangeEvent<HTMLInputElement>): void => {
+    const files = event.target.files
+    if (!files || files.length === 0) {
+      return
     }
-    // allows reselecting same file
-    event.target.value = ''
+    const file = files[0]
+    if (!/\.(jpe?g|png|gif)$/i.test(file.name)) {
+      return
+    }
+    setImageSource(URL.createObjectURL(file))
+    setMode('image')
   }
 
   const handleOpenCamera = () => {
@@ -40,13 +37,8 @@ const MainContainer = ({ model }: Props) => {
     setMode('webcam')
   }
 
-  const toggleFullscreen = () => {
-    setFullscreen((fs) => !fs)
-  }
-
-  const handleCloseAll = () => {
-    setMode('empty')
-  }
+  const toggleFullscreen = () => setFullscreen(!fullscreen)
+  const handleCloseAll = () => setMode('empty')
 
   return (
     <main style={{ paddingTop: '1rem', paddingBottom: '1rem' }}>
@@ -124,4 +116,4 @@ const MainContainer = ({ model }: Props) => {
   )
 }
 
-export default MainContainer
+export default Detection

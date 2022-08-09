@@ -45,6 +45,17 @@ const ImageContainer = ({
     }
   }, [imageSource, model])
 
+  const detectImage = (
+    <DetectImage
+      loading={loading}
+      objects={objects}
+      imageSource={imageSource}
+      width={width}
+      height={height}
+      onClickAction={onClickAction}
+      fullscreen={fullscreen}
+    />
+  )
   return (
     <>
       <Dialog
@@ -53,25 +64,9 @@ const ImageContainer = ({
         fullScreen
         style={{ width: '100%' }}
       >
-        <DetectImage
-          loading={loading}
-          objects={objects}
-          imageSource={imageSource}
-          width={width}
-          height={height}
-          onClickAction={onClickAction}
-          fullscreen
-        />
+        {fullscreen && detectImage}
       </Dialog>
-      <DetectImage
-        loading={loading}
-        objects={objects}
-        imageSource={imageSource}
-        width={width}
-        height={height}
-        onClickAction={onClickAction}
-        fullscreen={false}
-      />
+      {!fullscreen && detectImage}
     </>
   )
 }
