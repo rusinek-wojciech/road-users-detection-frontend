@@ -7,12 +7,17 @@ import IconButton from '@mui/material/IconButton'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import { PaletteMode } from '@mui/material'
+import styled from '@emotion/styled'
 
 interface Props {
   paletteMode: PaletteMode
   onTogglePaletteMode: () => void
   onToggleSidebar: () => void
 }
+
+const StyledBox = styled(Box)`
+  flex-grow: 1;
+`
 
 const Navbar = ({
   paletteMode,
@@ -21,7 +26,7 @@ const Navbar = ({
 }: Props) => {
   const isDarkMode = paletteMode === 'dark'
   return (
-    <Box sx={{ flexGrow: 1 }}>
+    <StyledBox>
       <AppBar position='static'>
         <Toolbar variant='dense'>
           <IconButton
@@ -53,7 +58,7 @@ const Navbar = ({
           </IconButton>
         </Toolbar>
       </AppBar>
-    </Box>
+    </StyledBox>
   )
 }
 

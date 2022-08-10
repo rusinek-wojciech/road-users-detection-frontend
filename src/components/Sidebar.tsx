@@ -10,6 +10,7 @@ import DarkModeIcon from '@mui/icons-material/DarkMode'
 import FormatColorFillIcon from '@mui/icons-material/FormatColorFill'
 import { Avatar, ListItemAvatar, PaletteMode } from '@mui/material'
 import { MODEL_CONFIG } from '../config/models'
+import styled from '@emotion/styled'
 
 interface Props {
   sidebarEnabled: boolean
@@ -18,6 +19,10 @@ interface Props {
   onToggleSidebar: () => void
   onTogglePaletteMode: () => void
 }
+
+const StyledBox = styled(Box)`
+  width: 250;
+`
 
 const Sidebar = ({
   sidebarEnabled,
@@ -31,8 +36,7 @@ const Sidebar = ({
   return (
     <div>
       <Drawer anchor={'left'} open={sidebarEnabled} onClose={onCloseSidebar}>
-        <Box
-          sx={{ width: 250 }}
+        <StyledBox
           role='presentation'
           onClick={onToggleSidebar}
           onKeyDown={onToggleSidebar}
@@ -71,7 +75,7 @@ const Sidebar = ({
             ))}
           </List>
           <Divider />
-        </Box>
+        </StyledBox>
       </Drawer>
     </div>
   )

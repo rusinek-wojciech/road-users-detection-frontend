@@ -38,13 +38,7 @@ const DetectWebcam = ({
       if (!video) {
         return
       }
-      draw(
-        objects,
-        canvas,
-        card.clientWidth,
-        card.clientHeight,
-        video.videoWidth
-      )
+      draw(objects, canvas)
       frameRequest = requestAnimationFrame(animateDraw)
     }
 

@@ -6,7 +6,7 @@ const drawText = (
   y: number,
   ctx: CanvasRenderingContext2D
 ): void => {
-  ctx.font = 'lighter 0.9rem Roboto'
+  ctx.font = 'lighter 1rem Roboto'
   ctx.strokeStyle = 'black'
   ctx.lineWidth = 5
   ctx.strokeText(text, x, y)
@@ -28,37 +28,18 @@ const drawBox = (
 
 export const draw = (
   objects: DetectedObject[],
-  canvas: HTMLCanvasElement,
-  clientWidth: number,
-  clientHeight: number,
-  width: number
+  canvas: HTMLCanvasElement
 ): void => {
   const ctx = canvas.getContext('2d')!
-
   ctx.clearRect(0, 0, canvas.width, canvas.height)
-  canvas.width = clientWidth
-  canvas.height = clientHeight
-
-  const scale = clientWidth / width
 
   for (let i = 0; i < objects.length; i++) {
     const { label, box, score } = objects[i]
-    const resizedBox = box.map((p) => p * scale) as Box
 
-    resizedBox[1] <= 40
-      ? drawText(
-          `${label.name} ${score}`,
-          resizedBox[0] + 5,
-          resizedBox[1] + 20,
-          ctx
-        )
-      : drawText(
-          `${label.name} ${score}`,
-          resizedBox[0],
-          resizedBox[1] - 5,
-          ctx
-        )
+    box[1] <= 40
+      ? drawText(`${label.name} ${score}`, box[0] + 5, box[1] + 20, ctx)
+      : drawText(`${label.name} ${score}`, box[0], box[1] - 5, ctx)
 
-    drawBox(resizedBox, label.color, ctx)
+    drawBox(box, label.color, ctx)
   }
 }

@@ -1,18 +1,20 @@
+import styled from '@emotion/styled'
 import Backdrop from '@mui/material/Backdrop'
 import CircularProgress from '@mui/material/CircularProgress'
 
+const StyledBackdrop = styled(Backdrop)`
+  color: #fff;
+  z-index: 1000;
+`
 interface Props {
   open: boolean
 }
 
 const BackdropSpinner = ({ open }: Props) => {
   return (
-    <Backdrop
-      sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-      open={open}
-    >
+    <StyledBackdrop open={open}>
       <CircularProgress color='inherit' disableShrink />
-    </Backdrop>
+    </StyledBackdrop>
   )
 }
 
