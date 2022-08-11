@@ -82,8 +82,8 @@ const ImageDetection = ({ model, image, fullscreen, onClickAction }: Props) => {
 
   return (
     <StyledCard className={fullscreen ? 'fullscreen' : 'normal'}>
-      {loading && <Spinner />}
       <StyledCardActionArea onClick={onClickAction}>
+        {loading && <Spinner />}
         <Canvas ref={canvasRef} isLoading={loading} />
         <StyledCardMedia
           component='img'

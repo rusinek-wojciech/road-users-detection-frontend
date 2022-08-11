@@ -95,7 +95,6 @@ const Detection = ({ model }: Props) => {
         />
         <label htmlFor='upload-image'>
           <Button
-            style={{ width: '100%' }}
             variant='contained'
             component='span'
             startIcon={<FileUploadIcon />}
