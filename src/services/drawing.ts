@@ -1,4 +1,4 @@
-import { Box, DetectedObject } from '../types'
+import { Box, DetectedObject } from 'types'
 
 const drawText = (
   text: string,

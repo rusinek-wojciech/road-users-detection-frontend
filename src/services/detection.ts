@@ -10,9 +10,9 @@ import {
   ready,
   loadGraphModel,
 } from '@tensorflow/tfjs'
-import { MODEL_CONFIG } from '../config/models'
-import { Box, DetectedObject, Source } from '../types'
-import { Semaphore } from '../utils/semaphore'
+import { MODEL_CONFIG } from 'config/models'
+import { Box, DetectedObject, Source } from 'types'
+import { Semaphore } from 'utils/semaphore'
 
 export const loadModelAndWarmUp = async (): Promise<GraphModel> => {
   enableProdMode()

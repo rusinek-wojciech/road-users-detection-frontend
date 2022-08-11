@@ -8,8 +8,9 @@ import Typography from '@mui/material/Typography'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import Button from '@mui/material/Button'
-import ImageDetection from './ImageDetection'
-import VideoDetection from './VideoDetection'
+
+import ImageDetection from 'detections/ImageDetection'
+import VideoDetection from 'detections/VideoDetection'
 
 const StyledContainer = styled(Container)`
   padding: 1rem;

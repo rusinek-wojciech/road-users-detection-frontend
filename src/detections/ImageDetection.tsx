@@ -1,14 +1,15 @@
 import { useEffect, useState, useRef } from 'react'
 import { GraphModel } from '@tensorflow/tfjs'
-import { synchronizedDetection } from '../services/detection'
-import { draw } from '../services/drawing'
-import Spinner from '../components/Spinner'
+
+import { synchronizedDetection } from 'services/detection'
+import { draw } from 'services/drawing'
+import Spinner from 'components/Spinner'
 import {
   Canvas,
   StyledCard,
   StyledCardActionArea,
   StyledCardMedia,
-} from './styles'
+} from 'detections/styles'
 
 interface Props {
   model: GraphModel

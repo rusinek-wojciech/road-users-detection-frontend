@@ -1,4 +1,4 @@
-import { ModelConfig } from '../types'
+import { ModelConfig } from 'types'
 
 const getModelPath = (model: string): string => `tensorflow/${model}/model.json`
 

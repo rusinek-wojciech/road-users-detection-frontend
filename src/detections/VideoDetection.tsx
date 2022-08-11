@@ -1,15 +1,16 @@
 import { useEffect, useRef, useState } from 'react'
 import { GraphModel } from '@tensorflow/tfjs'
-import { synchronizedDetection } from '../services/detection'
 import Webcam from 'react-webcam'
-import Spinner from '../components/Spinner'
-import { draw } from '../services/drawing'
+
+import { synchronizedDetection } from 'services/detection'
+import Spinner from 'components/Spinner'
+import { draw } from 'services/drawing'
 import {
   Canvas,
   StyledCard,
   StyledCardActionArea,
   StyledWebcam,
-} from './styles'
+} from 'detections/styles'
 
 const contraints: MediaTrackConstraints = {
   facingMode: 'environment',

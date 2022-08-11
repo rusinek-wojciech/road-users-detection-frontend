@@ -8,9 +8,12 @@ import ListItemText from '@mui/material/ListItemText'
 import LightModeIcon from '@mui/icons-material/LightMode'
 import DarkModeIcon from '@mui/icons-material/DarkMode'
 import FormatColorFillIcon from '@mui/icons-material/FormatColorFill'
-import { Avatar, ListItemAvatar, PaletteMode } from '@mui/material'
-import { MODEL_CONFIG } from '../config/models'
+import Avatar from '@mui/material/Avatar'
+import ListItemAvatar from '@mui/material/ListItemAvatar'
+import { PaletteMode } from '@mui/material'
 import styled from '@emotion/styled'
+
+import { MODEL_CONFIG } from 'config/models'
 
 interface Props {
   sidebarEnabled: boolean

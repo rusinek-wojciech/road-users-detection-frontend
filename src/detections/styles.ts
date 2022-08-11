@@ -1,5 +1,7 @@
 import styled from '@emotion/styled'
-import { Card, CardActionArea, CardMedia } from '@mui/material'
+import Card from '@mui/material/Card'
+import CardActionArea from '@mui/material/CardActionArea'
+import CardMedia from '@mui/material/CardMedia'
 import Webcam from 'react-webcam'
 
 export const StyledCard = styled(Card)`

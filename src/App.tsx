@@ -7,12 +7,12 @@ import {
 } from '@mui/material'
 import { GraphModel } from '@tensorflow/tfjs'
 
-import BackdropSpinner from './components/BackdropSpinner'
-import Detection from './detections/Detection'
-import Navbar from './components/Navbar'
-import Sidebar from './components/Sidebar'
-import { getDesignTokens, paletteModeLS } from './services/theme'
-import { loadModelAndWarmUp } from './services/detection'
+import BackdropSpinner from 'components/BackdropSpinner'
+import Detection from 'detections/Detection'
+import Navbar from 'components/Navbar'
+import Sidebar from 'components/Sidebar'
+import { getDesignTokens, paletteModeLS } from 'services/theme'
+import { loadModelAndWarmUp } from 'services/detection'
 
 const App = () => {
   const [model, setModel] = useState<GraphModel>()
