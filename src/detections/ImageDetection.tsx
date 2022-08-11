@@ -2,30 +2,24 @@ import { useEffect, useState, useRef } from 'react'
 import { GraphModel } from '@tensorflow/tfjs'
 import styled from '@emotion/styled'
 import { synchronizedDetection } from '../services/detection'
-import { DetectedObject } from '../types'
 import { Card, CardActionArea, CardMedia } from '@mui/material'
 import { draw } from '../services/drawing'
 import Spinner from '../components/Spinner'
-import { css } from '@emotion/react'
-
-const fullScreenCardStyle = css`
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 10;
-  width: 100%;
-  height: 100%;
-`
-
-const normalCardStyle = css`
-  position: relative;
-  width: fit-content;
-  margin: 0 auto;
-`
 
 const StyledCard = styled(Card)`
-  ${(props: { fullscreen: boolean }) =>
-    props.fullscreen ? fullScreenCardStyle : normalCardStyle}
+  &.normal {
+    position: relative;
+    width: fit-content;
+    margin: 0 auto;
+  }
+  &.fullscreen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 10;
+    width: 100%;
+    height: 100%;
+  }
 `
 
 const StyledCardActionArea = styled(CardActionArea)`
@@ -57,19 +51,22 @@ interface Props {
 }
 
 const ImageDetection = ({ model, image, fullscreen, onClickAction }: Props) => {
-  const [objects, setObjects] = useState<DetectedObject[]>([])
   const [loading, setLoading] = useState<boolean>(true)
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {
     let mounted = true
+    const canvas = canvasRef.current!
 
     image.addEventListener(
       'load',
       async () => {
         const objects = await synchronizedDetection.onImage(model, image)
+
         if (mounted) {
-          setObjects(objects)
+          canvas.width = image.width
+          canvas.height = image.height
+          draw(objects, canvas)
           setLoading(false)
         }
       },
@@ -78,31 +75,13 @@ const ImageDetection = ({ model, image, fullscreen, onClickAction }: Props) => {
 
     return () => {
       mounted = false
-    }
-  }, [image, model])
-
-  useEffect(() => {
-    let frameRequest = 0
-    const canvas = canvasRef.current!
-    canvas.width = image.width
-    canvas.height = image.height
-
-    const animateDraw = () => {
-      draw(objects, canvas)
-      frameRequest = requestAnimationFrame(animateDraw)
-    }
-
-    animateDraw()
-
-    return () => {
-      cancelAnimationFrame(frameRequest)
       const ctx = canvas.getContext('2d')!
       ctx.clearRect(0, 0, canvas.width, canvas.height)
     }
-  }, [image, objects])
+  }, [image, model])
 
   return (
-    <StyledCard fullscreen={fullscreen}>
+    <StyledCard className={fullscreen ? 'fullscreen' : 'normal'}>
       {loading && <Spinner />}
       <StyledCardActionArea onClick={onClickAction}>
         <Canvas ref={canvasRef} isLoading={loading} />
