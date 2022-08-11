@@ -48,6 +48,9 @@ export const StyledCardMedia = styled(CardMedia)`
   &.normal {
     height: 100%;
   }
+  &.fullscreen {
+    max-height: 100%;
+  }
 ` as typeof CardMedia
 
 export const StyledWebcam = styled(Webcam as any)`
