@@ -1,47 +1,14 @@
 import { useEffect, useState, useRef } from 'react'
 import { GraphModel } from '@tensorflow/tfjs'
-import styled from '@emotion/styled'
 import { synchronizedDetection } from '../services/detection'
-import { Card, CardActionArea, CardMedia } from '@mui/material'
 import { draw } from '../services/drawing'
 import Spinner from '../components/Spinner'
-
-const StyledCard = styled(Card)`
-  &.normal {
-    position: relative;
-    width: fit-content;
-    margin: 0 auto;
-  }
-  &.fullscreen {
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 10;
-    width: 100%;
-    height: 100%;
-  }
-`
-
-const StyledCardActionArea = styled(CardActionArea)`
-  width: fit-content;
-  margin: 0 auto;
-`
-
-const Canvas = styled.canvas`
-  position: absolute;
-  left: 0;
-  right: 0;
-  z-index: 100;
-  width: 100%;
-  height: 100%;
-  background-color: ${(props: { isLoading: boolean }) =>
-    props.isLoading ? 'rgba(0, 0, 0, 0.5)' : 'rgba(0, 0, 0, 0)'};
-`
-
-const StyledCardMedia = styled(CardMedia)`
-  width: 100%;
-  object-fit: contain;
-` as typeof CardMedia
+import {
+  Canvas,
+  StyledCard,
+  StyledCardActionArea,
+  StyledCardMedia,
+} from './styles'
 
 interface Props {
   model: GraphModel

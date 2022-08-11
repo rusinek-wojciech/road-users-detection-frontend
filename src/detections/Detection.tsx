@@ -9,7 +9,7 @@ import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import Button from '@mui/material/Button'
 import ImageDetection from './ImageDetection'
-import WebcamContainer from './WebcamContainer'
+import VideoDetection from './VideoDetection'
 
 const StyledContainer = styled(Container)`
   padding: 1rem;
@@ -29,6 +29,7 @@ const Detection = ({ model }: Props) => {
     if (!files || files.length === 0) {
       return
     }
+
     const file = files[0]
     if (!/\.(jpe?g|png|gif)$/i.test(file.name)) {
       return
@@ -72,7 +73,7 @@ const Detection = ({ model }: Props) => {
           fullscreen={fullscreen}
         />
       ) : mode === 'webcam' ? (
-        <WebcamContainer
+        <VideoDetection
           onClickAction={toggleFullscreen}
           model={model}
           fullscreen={fullscreen}
