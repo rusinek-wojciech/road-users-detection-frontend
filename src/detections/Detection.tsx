@@ -14,6 +14,9 @@ import VideoDetection from 'detections/VideoDetection'
 
 const StyledContainer = styled(Container)`
   padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 48px);
 `
 
 interface Props {

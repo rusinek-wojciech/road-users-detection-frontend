@@ -68,12 +68,19 @@ const VideoDetection = ({ model, fullscreen, onClickAction }: Props) => {
     }
   }, [model])
 
+  const fullScreenClass = fullscreen ? 'fullscreen' : 'normal'
+
   return (
-    <StyledCard className={fullscreen ? 'fullscreen' : 'normal'}>
+    <StyledCard className={fullScreenClass}>
       <StyledCardActionArea onClick={onClickAction}>
         {loading && <Spinner />}
-        <Canvas ref={canvasRef} isLoading={loading} />
+        <Canvas
+          className={fullScreenClass}
+          ref={canvasRef}
+          isLoading={loading}
+        />
         <StyledWebcam
+          className={fullScreenClass}
           ref={webcamRef}
           muted={true}
           videoConstraints={contraints}

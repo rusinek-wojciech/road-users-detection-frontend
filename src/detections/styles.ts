@@ -21,6 +21,7 @@ export const StyledCard = styled(Card)`
 `
 
 export const StyledCardActionArea = styled(CardActionArea)`
+  height: 100%;
   width: fit-content;
   margin: 0 auto;
 `
@@ -31,18 +32,26 @@ export const Canvas = styled.canvas`
   right: 0;
   z-index: 100;
   width: 100%;
-  height: 100%;
   background-color: ${(props: { isLoading: boolean }) =>
     props.isLoading ? 'rgba(0, 0, 0, 0.5)' : 'rgba(0, 0, 0, 0)'};
+  &.normal {
+    height: 100%;
+  }
 `
 
 export const StyledCardMedia = styled(CardMedia)`
   width: 100%;
   object-fit: contain;
+  &.normal {
+    height: 100%;
+  }
 ` as typeof CardMedia
 
 export const StyledWebcam = styled(Webcam as any)`
   width: 100%;
   object-fit: contain;
   display: block;
+  &.normal {
+    height: 100%;
+  }
 ` as unknown as typeof Webcam
