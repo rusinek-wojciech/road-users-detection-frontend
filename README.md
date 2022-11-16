@@ -22,3 +22,6 @@ Choose active model.
 ![Bikes](.github/assets/1.png "Bikes")
 
 ![UTOs](.github/assets/2.png "UTOs")
+
+Images from Open Image Dataset, [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
+
