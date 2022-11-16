@@ -1,6 +1,7 @@
 # Road Users Detection
 
 Add your own tensorflow.js model to react app.
+App supports PWA.
 
 ## Installation
 
