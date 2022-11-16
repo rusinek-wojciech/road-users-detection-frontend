@@ -1,10 +1,24 @@
 # Road Users Detection
 
-Tensorflow.js model in react app.
+Add your own tensorflow.js model to react app.
 
 ## Installation
 
-Run command npm install.
+Run command `npm install`.
+
 Move your tensorflow.js model to `public/tensorflow`.
+
 Add model configuration in `src/config/models.ts`.
-Choose active model in `src/config/models.ts`.
+
+Set labels and colors.
+
+Set threshold and configure indices.
+
+Choose active model.
+
+
+## Preview
+
+![Bikes](.github/assets/1.png "Bikes")
+
+![UTOs](.github/assets/2.png "UTOs")
