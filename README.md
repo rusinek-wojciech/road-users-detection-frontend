@@ -6,7 +6,7 @@ Add your own tensorflow.js model to react app.
 
 Run command `npm install`.
 
-Move your tensorflow.js model to `public/tensorflow`.
+Move your tensorflow.js model to `public/tensorflow/`.
 
 Add model configuration in `src/config/models.ts`.
 
